@@ -111,7 +111,7 @@
     display:flex; align-items:center; gap:.7em; text-transform:uppercase;
   }
 
-  /* ================= GULAAB PLAYER (original layout, buttons trimmed) ================= */
+  /* ================= GULAAB PLAYER ================= */
   .gulaab-wrap{
     position:fixed; inset:0; z-index:50;
     display:flex; flex-direction:column;
@@ -174,7 +174,7 @@
     backdrop-filter: blur(6px); z-index:10; white-space:nowrap; color:#fff;
   }
 
-  /* Original #bar — MP3, Lyrics, Speed removed */
+  /* Original #bar (MP3, Lyrics, Speed removed) */
   #bar{
     flex:0 0 auto; display:flex; flex-wrap:wrap; align-items:center;
     gap:0.6rem 1rem; padding:0.6rem 1rem;
@@ -520,7 +520,6 @@
   }
 
   /* ---- Auto-load lyrics.json from same folder ---- */
-  // Use fetch first; fall back to XHR for file:// protocol
   fetch('lyrics.json')
     .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
     .then(data => loadLyricsFromData(data))
