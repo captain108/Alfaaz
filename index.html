@@ -119,6 +119,15 @@ body.welcome-open #welcomeScreen{opacity:0;visibility:hidden;transform:scale(1.0
 @media(max-width:600px){.welcome-top{letter-spacing:.16em;margin-bottom:11vh}.welcome-card h1{font-size:clamp(2.4rem,11vw,4rem)}.welcome-hint{font-size:.5rem;letter-spacing:.12em}}
 @media(prefers-reduced-motion:reduce){#welcomeScreen:before,#welcomeScreen:after,.welcome-glow,.welcome-card{animation:none}}
 
+
+/* Smooth crossfade for scene backgrounds; original scene gradients remain unchanged */
+.bg-crossfade{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-size:cover;background-position:center;
+  opacity:1;will-change:opacity;
+  transition:opacity 1.65s cubic-bezier(.22,.61,.36,1);
+}
+
 </style>
 </head>
 <body>
@@ -204,8 +213,25 @@ function render(t, force){
   [...lyricEl.children].forEach(c => { c.style.setProperty('--out','0s'); c.classList.add('old'); setTimeout(()=>c.remove(), 900); });
   if(i < 0) return;
   const L = lines[i], span = L.end - L.start, off = Math.max(0, t - L.start);
+  // Freeze the previous rendered background, then crossfade it over the new scene.
+  const previousBg = document.createElement('div');
+  const previousStyle = getComputedStyle(bg);
+  previousBg.className = 'bg-crossfade';
+  previousBg.style.backgroundImage = previousStyle.backgroundImage;
+  previousBg.style.backgroundColor = previousStyle.backgroundColor;
+  previousBg.style.backgroundPosition = previousStyle.backgroundPosition;
+  previousBg.style.backgroundSize = previousStyle.backgroundSize;
+  previousBg.style.backgroundRepeat = previousStyle.backgroundRepeat;
+  stage.appendChild(previousBg);
+
   stage.className = 'scene-' + (L.scene || 'night');
   bg.style.backgroundImage = L.image ? `url("${L.image}")` : '';
+
+  // Fade the frozen previous scene away after the new gradient has been applied.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    previousBg.style.opacity = '0';
+  }));
+  setTimeout(() => previousBg.remove(), 1800);
   const hl = new Set((L.highlight||[]).map(w=>w.toLowerCase().replace(/[,.!?]/g,'')));
   const words = L.text.split(/\s+/), el = document.createElement('div');
   el.className = 'line' + (L.anim==='zoom' ? ' zoom' : '');
