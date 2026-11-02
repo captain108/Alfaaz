@@ -1,74 +1,920 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10000b"><title>Alfaaz — Screen Recreation</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16000b">
+<title>For You ♥ — Gulaab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --ink:#f7eaf0;
+    --muted:#b48a9e;
+    --rose:#ff5fb0;
+    --rose-deep:#ff168f;
+    --bg:#16000b;
+    --card:#20060f;
+    --line:rgba(255,120,180,.15);
+    --font-sans:'DM Sans', system-ui, sans-serif;
+    --font-serif:'Playfair Display', Georgia, serif;
+    --neon:#ff4d8c;
+    --glow:#ff99bb;
+  }
+  html,body{ height:100%; }
+  body{
+    background: radial-gradient(ellipse at 50% 0%, #2b0617 0%, #16000b 55%, #0d0006 100%);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ambient glow */
+  .ambient{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,60,140,.12), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(255,40,120,.10), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(255,90,160,.06), transparent 60%);
+    animation: breathe 9s ease-in-out infinite alternate;
+  }
+  @keyframes breathe{ from{opacity:.6; transform:scale(1);} to{opacity:1; transform:scale(1.05);} }
+  #petals{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+
+  /* ===== STAGE LAYOUT ===== */
+  .stage{
+    position:relative; z-index:2; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding: clamp(1.2rem, 3vw, 2.4rem) clamp(1rem, 4vw, 2.5rem) 2.2rem;
+    max-width:1080px; margin:0 auto;
+  }
+
+  /* ===== TOP LINE ===== */
+  .topline{
+    font-size:.68rem; letter-spacing:.32em; color:var(--muted);
+    display:flex; align-items:center; gap:.7em; text-transform:uppercase;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem); text-align:center;
+  }
+  .tiny-heart{ color:var(--rose); font-size:.9em; animation: heartbeat 1.8s ease-in-out infinite; }
+  @keyframes heartbeat{ 0%,100%{transform:scale(1);} 12%{transform:scale(1.25);} 24%{transform:scale(1);} 36%{transform:scale(1.18);} 48%{transform:scale(1);} }
+
+  /* ===== INTRO (opening page) ===== */
+  .intro{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:1.2rem; padding:2rem 0 3rem;
+    transition: opacity .6s ease, transform .6s ease, visibility .6s;
+  }
+  .intro.hidden{
+    opacity:0; transform:scale(.96); visibility:hidden; pointer-events:none;
+    position:absolute; inset:0; display:flex;
+  }
+  .eyebrow{
+    font-size:.68rem; letter-spacing:.4em; color:var(--rose); text-transform:uppercase; font-weight:600;
+  }
+  .intro h1{
+    font-family:var(--font-serif); font-weight:600; line-height:1.05;
+    font-size: clamp(2.6rem, 8vw, 5.4rem); letter-spacing:-.01em;
+  }
+  .intro h1 em{
+    font-style:italic; font-weight:500;
+    background:linear-gradient(120deg, #ffd1e8, #ff63c8 55%, #ff168f);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .intro p{ color:var(--muted); font-size: clamp(.95rem, 2vw, 1.12rem); max-width:34ch; line-height:1.6; }
+  .open-button{
+    margin-top:1rem; cursor:pointer; font-family:var(--font-sans); font-weight:600;
+    font-size: clamp(.95rem, 2vw, 1.05rem);
+    padding: 1rem 2.3rem; border-radius:100px;
+    border:1px solid rgba(255,120,180,.5);
+    color:#fff;
+    background: linear-gradient(135deg, rgba(255,60,140,.9), rgba(255,20,110,.95));
+    box-shadow: 0 0 0 rgba(255,60,140,0), 0 14px 40px -10px rgba(255,40,120,.6);
+    display:inline-flex; align-items:center; gap:.7em;
+    transition: transform .25s ease, box-shadow .3s ease, background .3s;
+    position:relative; overflow:hidden;
+  }
+  .open-button::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+    transform:translateX(-120%); transition:transform .8s ease;
+  }
+  .open-button:hover{ transform:translateY(-3px); box-shadow: 0 0 0 rgba(255,60,140,.3), 0 20px 50px -10px rgba(255,40,120,.8); }
+  .open-button:hover::after{ transform:translateX(120%); }
+  .open-button span{ font-size:1.1em; transition: transform .25s; }
+  .open-button:hover span{ transform: translate(3px,-3px); }
+  .hint{ font-size:.62rem; letter-spacing:.28em; color:#7a4d61; text-transform:uppercase; margin-top:.6rem; }
+
+  /* ===== SHOW (lyrics player) — hidden until opened ===== */
+  .show{
+    flex:1; width:100%; display:flex; flex-direction:column; align-items:center;
+    gap: clamp(1rem, 2.5vw, 1.6rem); padding-top:1rem;
+    opacity:0; visibility:hidden; transform:translateY(16px);
+    transition: opacity .7s ease .1s, transform .7s ease .1s, visibility .7s;
+  }
+  .show.visible{ opacity:1; visibility:visible; transform:translateY(0); }
+
+  .scene-label{
+    font-size:.64rem; letter-spacing:.28em; color:var(--muted);
+    text-transform:uppercase; display:flex; align-items:center; gap:.8em;
+  }
+  .scene-label i{ display:inline-block; width:2.2rem; height:1px; background:linear-gradient(90deg,var(--rose),transparent); }
+  .scene-label span{ color:var(--rose); font-weight:600; }
+
+  /* ===== GULAAB ANIMATED STAGE ===== */
+  #gulaabStage{
+    position:relative; width:100%; flex:1; min-height: 46vh;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:20px; overflow:hidden; margin:.6rem 0;
+    background: radial-gradient(circle at 30% 40%, #1a1a2e, #0a0a12);
+    box-shadow: 0 0 0 1px rgba(255,120,180,.08), 0 20px 60px -20px #000;
+  }
+  #gulaabStage .bg{
+    position:absolute; inset:0;
+    background: radial-gradient(circle at 70% 30%, #2e1a2e, #0a0a12 80%);
+    z-index:0;
+  }
+  #gulaabStage .rays{
+    position:absolute; inset:0;
+    background: conic-gradient(from 0deg at 70% 30%, transparent 0deg, rgba(255, 80, 140, 0.08) 20deg, transparent 40deg, transparent 360deg);
+    animation: rotateRays 18s linear infinite;
+    z-index:0; pointer-events:none;
+  }
+  @keyframes rotateRays{ to{ transform: rotate(360deg); } }
+  #fx{
+    position:absolute; inset:0; width:100%; height:100%;
+    z-index:1; pointer-events:none;
+  }
+  #roseGulaab{
+    position:relative; z-index:2;
+    width: min(42vw, 38vh); height:auto;
+    filter: drop-shadow(0 0 18px var(--neon)) drop-shadow(0 0 40px #ff2d6f88);
+    animation: pulseRose 3s ease-in-out infinite alternate;
+  }
+  @keyframes pulseRose{
+    0% { filter: drop-shadow(0 0 12px var(--neon)) drop-shadow(0 0 30px #ff2d6f66); }
+    100% { filter: drop-shadow(0 0 24px var(--glow)) drop-shadow(0 0 60px #ff2d6fcc); }
+  }
+  #roseGulaab path{
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    transition: stroke-dashoffset .1s;
+  }
+  #roseGulaab path.drawn{ stroke-dashoffset: 0; }
+
+  #lyricGulaab{
+    position:absolute; bottom:8%; left:0; width:100%; text-align:center;
+    font-size: clamp(1.3rem, 5vw, 2.6rem); font-weight:700; letter-spacing:.02em;
+    color:#fff; text-shadow: 0 0 20px var(--neon), 0 0 60px #ff2d6faa, 0 2px 4px #000;
+    padding: 0 1rem; z-index:3; min-height: 2.4em;
+    transition: opacity .3s, transform .3s; pointer-events:none; line-height:1.3;
+  }
+  #hint{
+    position:absolute; top:1rem; left:50%; transform:translateX(-50%);
+    background:#000000cc; padding:.5rem 1.2rem; border-radius:2rem;
+    font-size:.85rem; border:1px solid #ff4d8c66; backdrop-filter: blur(6px);
+    z-index:10; white-space:nowrap; color:#fff;
+  }
+
+  /* ===== BAR (gulaab controls) ===== */
+  #bar{
+    width:100%; display:flex; flex-wrap:wrap; align-items:center;
+    gap:.5rem .9rem; padding:.7rem .9rem; border-radius:16px;
+    background:#0f0f1a; border:1px solid #2a2a3a; z-index:20;
+    font-size:.8rem; margin-top:.4rem;
+  }
+  #bar button{
+    background:#1f1f2e; border:1px solid #3a3a50; color:#ddd;
+    padding:.4rem 1rem; border-radius:2rem; font-weight:600; cursor:pointer;
+    transition: background .2s, border-color .2s; font-size:.8rem;
+    line-height:1.2; white-space:nowrap;
+  }
+  #bar button:hover{ background:#2e2e42; border-color:var(--rose); }
+  #bar button:active{ background:#3e2e4e; }
+  #bar input[type="range"]{ accent-color:var(--rose); background:transparent; cursor:pointer; width:100px; max-width:18vw; }
+  #seek{ flex:1 1 160px; min-width:90px; }
+  #time{ font-variant-numeric:tabular-nums; color:#aaa; min-width:5.2em; text-align:center; }
+  #bar label{ display:flex; align-items:center; gap:.3rem; color:#bbb; white-space:nowrap; }
+  #bar label.file{
+    cursor:pointer; background:#1f1f2e; padding:.3rem .7rem;
+    border-radius:2rem; border:1px solid #3a3a50;
+  }
+  #bar label.file:hover{ background:#2e2e42; border-color:var(--rose); }
+  #bar input[type="file"]{ display:none; }
+
+  /* ===== CONTROLS (next / replay / sound) ===== */
+  .controls{ display:flex; align-items:center; gap: clamp(.8rem, 2vw, 1.2rem); margin-top:.2rem; }
+  .round-control{
+    width:44px; height:44px; border-radius:50%; cursor:pointer;
+    background:rgba(255,255,255,.04); border:1px solid var(--line); color:var(--ink);
+    font-size:1.05rem; display:grid; place-items:center; transition: all .25s ease;
+  }
+  .round-control:hover{ background:rgba(255,60,140,.15); border-color:rgba(255,60,140,.5); transform:translateY(-2px); }
+  .round-control.active{ background:rgba(255,60,140,.2); border-color:var(--rose); color:#fff; }
+  .next-button{
+    cursor:pointer; font-family:var(--font-sans); font-weight:600; font-size:.88rem;
+    padding:.75rem 1.7rem; border-radius:100px;
+    border:1px solid rgba(255,120,180,.35); color:var(--ink);
+    background:linear-gradient(135deg, rgba(255,60,140,.16), rgba(255,20,110,.10));
+    display:inline-flex; align-items:center; gap:.55em; transition: all .25s ease;
+  }
+  .next-button:hover{ background:linear-gradient(135deg, rgba(255,60,140,.35), rgba(255,20,110,.25)); border-color:var(--rose); transform:translateY(-2px); }
+  .next-button span{ transition: transform .25s; }
+  .next-button:hover span{ transform:translateX(4px); }
+
+  footer{
+    margin-top:auto; padding-top:2rem; font-size:.6rem; letter-spacing:.3em;
+    color:#6b4255; text-transform:uppercase; text-align:center;
+  }
+  footer span{ color:var(--rose); }
+
+  /* ===== SETTINGS / EDIT ===== */
+  .settings{ position:fixed; top:1.2rem; right:1.2rem; z-index:20; }
+  #editBtn{
+    width:42px; height:42px; border-radius:50%; cursor:pointer;
+    background:rgba(20,4,12,.7); border:1px solid var(--line); color:var(--muted);
+    font-size:1.05rem; backdrop-filter:blur(8px); transition: all .25s;
+  }
+  #editBtn:hover{ color:var(--ink); border-color:var(--rose); transform:rotate(-12deg); }
+
+  dialog{
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:min(440px, 92vw); border:1px solid rgba(255,120,180,.2);
+    border-radius:20px; background:linear-gradient(160deg, #220712, #17040d);
+    color:var(--ink); padding:2rem 1.8rem 1.6rem; box-shadow:0 40px 120px -20px #000;
+  }
+  dialog::backdrop{ background:rgba(8,0,5,.7); backdrop-filter:blur(6px); }
+  dialog .close{
+    position:absolute; top:.9rem; right:.9rem; width:32px; height:32px; border-radius:50%;
+    background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--muted);
+    cursor:pointer; font-size:1.2rem; line-height:1; display:grid; place-items:center; transition:all .2s;
+  }
+  dialog .close:hover{ color:#fff; border-color:var(--rose); }
+  dialog h2{ font-family:var(--font-serif); font-weight:600; font-size:1.6rem; margin:.3rem 0 1.2rem; }
+  dialog label{ display:block; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
+  dialog input, dialog textarea{
+    display:block; width:100%; margin-top:.45rem; padding:.7rem .9rem;
+    background:rgba(0,0,0,.3); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink); font-family:var(--font-sans); font-size:.9rem; resize:vertical;
+    transition: border-color .2s;
+  }
+  dialog input:focus, dialog textarea:focus{ outline:none; border-color:var(--rose); }
+  .upload-label input{ padding:.55rem .5rem; font-size:.75rem; }
+  .save-button{
+    width:100%; cursor:pointer; margin-top:.4rem; padding:.85rem; border-radius:100px;
+    border:none; font-family:var(--font-sans); font-weight:600; font-size:.92rem; color:#fff;
+    background:linear-gradient(135deg, var(--rose), var(--rose-deep));
+    transition: transform .2s, box-shadow .3s;
+  }
+  .save-button:hover{ transform:translateY(-2px); box-shadow:0 14px 34px -8px rgba(255,40,120,.7); }
+  .dialog-note{ font-size:.65rem; color:#7a4d61; margin-top:.9rem; line-height:1.5; }
+
+  /* responsive */
+  @media (max-width:700px){
+    .topline{ font-size:.58rem; letter-spacing:.22em; }
+    .controls{ gap:.7rem; }
+    .next-button{ padding:.65rem 1.2rem; font-size:.8rem; }
+    #lyricGulaab{ font-size: clamp(1.1rem, 5vw, 1.6rem); }
+    .round-control{ width:40px; height:40px; }
+    #bar{ gap:.4rem .6rem; padding:.5rem .6rem; font-size:.72rem; }
+    #bar button, #bar label.file{ padding:.3rem .6rem; font-size:.72rem; }
+    #seek{ flex-basis:110px; }
+    #bar input[type="range"]{ width:60px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+</style>
 </head>
 <body>
-<main class="app" id="app">
-  <canvas id="visual" aria-label="Animated lyrics visual"></canvas>
-  <div class="topbar"><span class="brand">ALFAAZ <i>✦</i> LYRIC EXPERIENCE</span><span class="quality">SCREEN RECREATION · 15 FPS</span></div>
-  <div class="bottom-ui" id="ui">
-    <div class="track"><span id="elapsed">00:00</span><input id="seek" type="range" min="0" max="1000" value="0"><span id="total">00:54</span></div>
-    <div class="buttons">
-      <button id="restart" title="Restart">↺</button><button id="play" class="play">▶ Play</button>
-      <button id="mute" title="Mute">♫</button><input id="volume" type="range" min="0" max="1" step=".01" value=".85">
-      <button id="fullscreen" title="Fullscreen">⛶</button>
+<div class="ambient"></div>
+<canvas id="petals" aria-hidden="true"></canvas>
+
+<main class="stage">
+  <div class="topline"><span class="tiny-heart">♥</span> A LITTLE SOMETHING FOR YOU <span class="tiny-heart">♥</span></div>
+
+  <!-- ===== OPENING PAGE (intro) ===== -->
+  <section class="intro" id="intro">
+    <div class="eyebrow">MADE WITH LOVE</div>
+    <h1>Some feelings<br><em>need no words.</em></h1>
+    <p>A little moment, made just for you.</p>
+    <button class="open-button" id="openBtn">Open your surprise <span>↗</span></button>
+    <div class="hint">TURN YOUR SOUND ON FOR THE FULL EXPERIENCE</div>
+  </section>
+
+  <!-- ===== SHOW (lyrics player with Gulaab stage) ===== -->
+  <section class="show" id="show" aria-live="polite">
+    <div class="scene-label">CHAPTER <span id="chapterNo">01</span> <i></i> FOREVER IN A MOMENT</div>
+
+    <!-- GULAAB ANIMATED STAGE -->
+    <div id="gulaabStage" class="scene-night">
+      <div class="bg" id="bg"></div>
+      <div class="rays"></div>
+      <canvas id="fx"></canvas>
+      <svg id="roseGulaab" viewBox="0 0 200 300" aria-hidden="true">
+        <g fill="none" stroke="var(--neon)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path pathLength="1" d="M100 70c-22-2-34 14-30 32s26 26 44 18 20-30 4-42-34-6-38 10 6 22 20 20 12-14 2-16"/>
+          <path pathLength="1" d="M70 100c-24-8-40 6-36 28s24 36 46 34"/>
+          <path pathLength="1" d="M130 98c26-8 42 8 36 30s-24 34-46 32"/>
+          <path pathLength="1" d="M80 160c6 22 14 34 20 50v84"/>
+          <path pathLength="1" d="M100 250c-22-4-38-18-40-34 22 0 38 12 40 34z"/>
+          <path pathLength="1" d="M100 270c22-4 38-18 40-34-22 0-38 12-40 34z"/>
+        </g>
+      </svg>
+      <div id="lyricGulaab" aria-live="polite"></div>
+      <p id="hint" hidden>Pick <b>lyrics.json</b> to load your lyrics.</p>
     </div>
-    <div class="loading"><span id="status">Loading first frames…</span><span id="loaded">0 / 809</span></div>
-  </div>
+
+    <div class="lyric-sub" id="lyricSub">— with all my heart</div>
+
+    <!-- BAR controls for Gulaab audio -->
+    <div id="bar">
+      <button id="play" aria-label="Play">Play</button>
+      <button id="replay" aria-label="Replay">Replay</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Timeline">
+      <span id="time">0:00 / 0:00</span>
+      <label>Vol <input id="vol" type="range" min="0" max="1" step=".01" value=".8"></label>
+      <label>Speed <input id="spd" type="range" min=".5" max="2" step=".1" value="1"></label>
+      <button id="fs" aria-label="Fullscreen">Full screen</button>
+    </div>
+
+    <div class="controls">
+      <button class="round-control" id="replayBtn" aria-label="Replay">↺</button>
+      <button class="next-button" id="nextBtn">Next moment <span>→</span></button>
+      <button class="round-control" id="soundBtn" aria-label="Toggle sound">♫</button>
+    </div>
+  </section>
+
+  <footer>CRAFTED FROM THE HEART <span>✦</span> JUST FOR YOU</footer>
 </main>
-<audio id="song" preload="auto" src="audio/reference-song.mp3"></audio>
+
+<!-- ===== SETTINGS / PERSONALIZE ===== -->
+<div class="settings">
+  <button id="editBtn" title="Personalize this page">✎</button>
+</div>
+<dialog id="editDialog">
+  <form method="dialog" id="editForm">
+    <button class="close" aria-label="Close">×</button>
+    <div class="eyebrow">MAKE IT YOURS</div>
+    <h2>Personalize your surprise</h2>
+    <label>Person's name<input id="nameInput" maxlength="28" placeholder="Someone special"></label>
+    <label>Your message<textarea id="messageInput" rows="3" maxlength="140">You make ordinary moments feel like magic.</textarea></label>
+    <label>Small signature<input id="signInput" maxlength="35" value="— with all my heart"></label>
+    <label class="upload-label">Background music (optional)<input id="audioInput" type="file" accept="audio/*"></label>
+    <button class="save-button" id="saveBtn">Save changes</button>
+    <p class="dialog-note">Music stays on your device; use audio you have permission to use.</p>
+  </form>
+</dialog>
+
+<!-- ===== FIXED AUDIO SOURCE: place song.mp3 in the same folder ===== -->
+<audio id="audio" preload="auto">
+  <source src="song.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
 <script>
-const FRAMES=["frames/f0000.webp","frames/f0001.webp","frames/f0002.webp","frames/f0003.webp","frames/f0004.webp","frames/f0005.webp","frames/f0006.webp","frames/f0007.webp","frames/f0008.webp","frames/f0009.webp","frames/f0010.webp","frames/f0011.webp","frames/f0012.webp","frames/f0013.webp","frames/f0014.webp","frames/f0015.webp","frames/f0016.webp","frames/f0017.webp","frames/f0018.webp","frames/f0019.webp","frames/f0020.webp","frames/f0021.webp","frames/f0022.webp","frames/f0023.webp","frames/f0024.webp","frames/f0025.webp","frames/f0026.webp","frames/f0027.webp","frames/f0028.webp","frames/f0029.webp","frames/f0030.webp","frames/f0031.webp","frames/f0032.webp","frames/f0033.webp","frames/f0034.webp","frames/f0035.webp","frames/f0036.webp","frames/f0037.webp","frames/f0038.webp","frames/f0039.webp","frames/f0040.webp","frames/f0041.webp","frames/f0042.webp","frames/f0043.webp","frames/f0044.webp","frames/f0045.webp","frames/f0046.webp","frames/f0047.webp","frames/f0048.webp","frames/f0049.webp","frames/f0050.webp","frames/f0051.webp","frames/f0052.webp","frames/f0053.webp","frames/f0054.webp","frames/f0055.webp","frames/f0056.webp","frames/f0057.webp","frames/f0058.webp","frames/f0059.webp","frames/f0060.webp","frames/f0061.webp","frames/f0062.webp","frames/f0063.webp","frames/f0064.webp","frames/f0065.webp","frames/f0066.webp","frames/f0067.webp","frames/f0068.webp","frames/f0069.webp","frames/f0070.webp","frames/f0071.webp","frames/f0072.webp","frames/f0073.webp","frames/f0074.webp","frames/f0075.webp","frames/f0076.webp","frames/f0077.webp","frames/f0078.webp","frames/f0079.webp","frames/f0080.webp","frames/f0081.webp","frames/f0082.webp","frames/f0083.webp","frames/f0084.webp","frames/f0085.webp","frames/f0086.webp","frames/f0087.webp","frames/f0088.webp","frames/f0089.webp","frames/f0090.webp","frames/f0091.webp","frames/f0092.webp","frames/f0093.webp","frames/f0094.webp","frames/f0095.webp","frames/f0096.webp","frames/f0097.webp","frames/f0098.webp","frames/f0099.webp","frames/f0100.webp","frames/f0101.webp","frames/f0102.webp","frames/f0103.webp","frames/f0104.webp","frames/f0105.webp","frames/f0106.webp","frames/f0107.webp","frames/f0108.webp","frames/f0109.webp","frames/f0110.webp","frames/f0111.webp","frames/f0112.webp","frames/f0113.webp","frames/f0114.webp","frames/f0115.webp","frames/f0116.webp","frames/f0117.webp","frames/f0118.webp","frames/f0119.webp","frames/f0120.webp","frames/f0121.webp","frames/f0122.webp","frames/f0123.webp","frames/f0124.webp","frames/f0125.webp","frames/f0126.webp","frames/f0127.webp","frames/f0128.webp","frames/f0129.webp","frames/f0130.webp","frames/f0131.webp","frames/f0132.webp","frames/f0133.webp","frames/f0134.webp","frames/f0135.webp","frames/f0136.webp","frames/f0137.webp","frames/f0138.webp","frames/f0139.webp","frames/f0140.webp","frames/f0141.webp","frames/f0142.webp","frames/f0143.webp","frames/f0144.webp","frames/f0145.webp","frames/f0146.webp","frames/f0147.webp","frames/f0148.webp","frames/f0149.webp","frames/f0150.webp","frames/f0151.webp","frames/f0152.webp","frames/f0153.webp","frames/f0154.webp","frames/f0155.webp","frames/f0156.webp","frames/f0157.webp","frames/f0158.webp","frames/f0159.webp","frames/f0160.webp","frames/f0161.webp","frames/f0162.webp","frames/f0163.webp","frames/f0164.webp","frames/f0165.webp","frames/f0166.webp","frames/f0167.webp","frames/f0168.webp","frames/f0169.webp","frames/f0170.webp","frames/f0171.webp","frames/f0172.webp","frames/f0173.webp","frames/f0174.webp","frames/f0175.webp","frames/f0176.webp","frames/f0177.webp","frames/f0178.webp","frames/f0179.webp","frames/f0180.webp","frames/f0181.webp","frames/f0182.webp","frames/f0183.webp","frames/f0184.webp","frames/f0185.webp","frames/f0186.webp","frames/f0187.webp","frames/f0188.webp","frames/f0189.webp","frames/f0190.webp","frames/f0191.webp","frames/f0192.webp","frames/f0193.webp","frames/f0194.webp","frames/f0195.webp","frames/f0196.webp","frames/f0197.webp","frames/f0198.webp","frames/f0199.webp","frames/f0200.webp","frames/f0201.webp","frames/f0202.webp","frames/f0203.webp","frames/f0204.webp","frames/f0205.webp","frames/f0206.webp","frames/f0207.webp","frames/f0208.webp","frames/f0209.webp","frames/f0210.webp","frames/f0211.webp","frames/f0212.webp","frames/f0213.webp","frames/f0214.webp","frames/f0215.webp","frames/f0216.webp","frames/f0217.webp","frames/f0218.webp","frames/f0219.webp","frames/f0220.webp","frames/f0221.webp","frames/f0222.webp","frames/f0223.webp","frames/f0224.webp","frames/f0225.webp","frames/f0226.webp","frames/f0227.webp","frames/f0228.webp","frames/f0229.webp","frames/f0230.webp","frames/f0231.webp","frames/f0232.webp","frames/f0233.webp","frames/f0234.webp","frames/f0235.webp","frames/f0236.webp","frames/f0237.webp","frames/f0238.webp","frames/f0239.webp","frames/f0240.webp","frames/f0241.webp","frames/f0242.webp","frames/f0243.webp","frames/f0244.webp","frames/f0245.webp","frames/f0246.webp","frames/f0247.webp","frames/f0248.webp","frames/f0249.webp","frames/f0250.webp","frames/f0251.webp","frames/f0252.webp","frames/f0253.webp","frames/f0254.webp","frames/f0255.webp","frames/f0256.webp","frames/f0257.webp","frames/f0258.webp","frames/f0259.webp","frames/f0260.webp","frames/f0261.webp","frames/f0262.webp","frames/f0263.webp","frames/f0264.webp","frames/f0265.webp","frames/f0266.webp","frames/f0267.webp","frames/f0268.webp","frames/f0269.webp","frames/f0270.webp","frames/f0271.webp","frames/f0272.webp","frames/f0273.webp","frames/f0274.webp","frames/f0275.webp","frames/f0276.webp","frames/f0277.webp","frames/f0278.webp","frames/f0279.webp","frames/f0280.webp","frames/f0281.webp","frames/f0282.webp","frames/f0283.webp","frames/f0284.webp","frames/f0285.webp","frames/f0286.webp","frames/f0287.webp","frames/f0288.webp","frames/f0289.webp","frames/f0290.webp","frames/f0291.webp","frames/f0292.webp","frames/f0293.webp","frames/f0294.webp","frames/f0295.webp","frames/f0296.webp","frames/f0297.webp","frames/f0298.webp","frames/f0299.webp","frames/f0300.webp","frames/f0301.webp","frames/f0302.webp","frames/f0303.webp","frames/f0304.webp","frames/f0305.webp","frames/f0306.webp","frames/f0307.webp","frames/f0308.webp","frames/f0309.webp","frames/f0310.webp","frames/f0311.webp","frames/f0312.webp","frames/f0313.webp","frames/f0314.webp","frames/f0315.webp","frames/f0316.webp","frames/f0317.webp","frames/f0318.webp","frames/f0319.webp","frames/f0320.webp","frames/f0321.webp","frames/f0322.webp","frames/f0323.webp","frames/f0324.webp","frames/f0325.webp","frames/f0326.webp","frames/f0327.webp","frames/f0328.webp","frames/f0329.webp","frames/f0330.webp","frames/f0331.webp","frames/f0332.webp","frames/f0333.webp","frames/f0334.webp","frames/f0335.webp","frames/f0336.webp","frames/f0337.webp","frames/f0338.webp","frames/f0339.webp","frames/f0340.webp","frames/f0341.webp","frames/f0342.webp","frames/f0343.webp","frames/f0344.webp","frames/f0345.webp","frames/f0346.webp","frames/f0347.webp","frames/f0348.webp","frames/f0349.webp","frames/f0350.webp","frames/f0351.webp","frames/f0352.webp","frames/f0353.webp","frames/f0354.webp","frames/f0355.webp","frames/f0356.webp","frames/f0357.webp","frames/f0358.webp","frames/f0359.webp","frames/f0360.webp","frames/f0361.webp","frames/f0362.webp","frames/f0363.webp","frames/f0364.webp","frames/f0365.webp","frames/f0366.webp","frames/f0367.webp","frames/f0368.webp","frames/f0369.webp","frames/f0370.webp","frames/f0371.webp","frames/f0372.webp","frames/f0373.webp","frames/f0374.webp","frames/f0375.webp","frames/f0376.webp","frames/f0377.webp","frames/f0378.webp","frames/f0379.webp","frames/f0380.webp","frames/f0381.webp","frames/f0382.webp","frames/f0383.webp","frames/f0384.webp","frames/f0385.webp","frames/f0386.webp","frames/f0387.webp","frames/f0388.webp","frames/f0389.webp","frames/f0390.webp","frames/f0391.webp","frames/f0392.webp","frames/f0393.webp","frames/f0394.webp","frames/f0395.webp","frames/f0396.webp","frames/f0397.webp","frames/f0398.webp","frames/f0399.webp","frames/f0400.webp","frames/f0401.webp","frames/f0402.webp","frames/f0403.webp","frames/f0404.webp","frames/f0405.webp","frames/f0406.webp","frames/f0407.webp","frames/f0408.webp","frames/f0409.webp","frames/f0410.webp","frames/f0411.webp","frames/f0412.webp","frames/f0413.webp","frames/f0414.webp","frames/f0415.webp","frames/f0416.webp","frames/f0417.webp","frames/f0418.webp","frames/f0419.webp","frames/f0420.webp","frames/f0421.webp","frames/f0422.webp","frames/f0423.webp","frames/f0424.webp","frames/f0425.webp","frames/f0426.webp","frames/f0427.webp","frames/f0428.webp","frames/f0429.webp","frames/f0430.webp","frames/f0431.webp","frames/f0432.webp","frames/f0433.webp","frames/f0434.webp","frames/f0435.jpg","frames/f0436.jpg","frames/f0437.jpg","frames/f0438.jpg","frames/f0439.jpg","frames/f0440.jpg","frames/f0441.jpg","frames/f0442.jpg","frames/f0443.jpg","frames/f0444.jpg","frames/f0445.jpg","frames/f0446.jpg","frames/f0447.jpg","frames/f0448.jpg","frames/f0449.jpg","frames/f0450.jpg","frames/f0451.jpg","frames/f0452.jpg","frames/f0453.jpg","frames/f0454.jpg","frames/f0455.jpg","frames/f0456.jpg","frames/f0457.jpg","frames/f0458.jpg","frames/f0459.jpg","frames/f0460.jpg","frames/f0461.jpg","frames/f0462.jpg","frames/f0463.jpg","frames/f0464.jpg","frames/f0465.jpg","frames/f0466.jpg","frames/f0467.jpg","frames/f0468.jpg","frames/f0469.jpg","frames/f0470.jpg","frames/f0471.jpg","frames/f0472.jpg","frames/f0473.jpg","frames/f0474.jpg","frames/f0475.jpg","frames/f0476.jpg","frames/f0477.jpg","frames/f0478.jpg","frames/f0479.jpg","frames/f0480.jpg","frames/f0481.jpg","frames/f0482.jpg","frames/f0483.jpg","frames/f0484.jpg","frames/f0485.jpg","frames/f0486.jpg","frames/f0487.jpg","frames/f0488.jpg","frames/f0489.jpg","frames/f0490.jpg","frames/f0491.jpg","frames/f0492.jpg","frames/f0493.jpg","frames/f0494.jpg","frames/f0495.jpg","frames/f0496.jpg","frames/f0497.jpg","frames/f0498.jpg","frames/f0499.jpg","frames/f0500.jpg","frames/f0501.jpg","frames/f0502.jpg","frames/f0503.jpg","frames/f0504.jpg","frames/f0505.jpg","frames/f0506.jpg","frames/f0507.jpg","frames/f0508.jpg","frames/f0509.jpg","frames/f0510.jpg","frames/f0511.jpg","frames/f0512.jpg","frames/f0513.jpg","frames/f0514.jpg","frames/f0515.jpg","frames/f0516.jpg","frames/f0517.jpg","frames/f0518.jpg","frames/f0519.jpg","frames/f0520.jpg","frames/f0521.jpg","frames/f0522.jpg","frames/f0523.jpg","frames/f0524.jpg","frames/f0525.jpg","frames/f0526.jpg","frames/f0527.jpg","frames/f0528.jpg","frames/f0529.jpg","frames/f0530.jpg","frames/f0531.jpg","frames/f0532.jpg","frames/f0533.jpg","frames/f0534.jpg","frames/f0535.jpg","frames/f0536.jpg","frames/f0537.jpg","frames/f0538.jpg","frames/f0539.jpg","frames/f0540.jpg","frames/f0541.jpg","frames/f0542.jpg","frames/f0543.jpg","frames/f0544.jpg","frames/f0545.jpg","frames/f0546.jpg","frames/f0547.jpg","frames/f0548.jpg","frames/f0549.jpg","frames/f0550.jpg","frames/f0551.jpg","frames/f0552.jpg","frames/f0553.jpg","frames/f0554.jpg","frames/f0555.jpg","frames/f0556.jpg","frames/f0557.jpg","frames/f0558.jpg","frames/f0559.jpg","frames/f0560.jpg","frames/f0561.jpg","frames/f0562.jpg","frames/f0563.jpg","frames/f0564.jpg","frames/f0565.jpg","frames/f0566.jpg","frames/f0567.jpg","frames/f0568.jpg","frames/f0569.jpg","frames/f0570.jpg","frames/f0571.jpg","frames/f0572.jpg","frames/f0573.jpg","frames/f0574.jpg","frames/f0575.jpg","frames/f0576.jpg","frames/f0577.jpg","frames/f0578.jpg","frames/f0579.jpg","frames/f0580.jpg","frames/f0581.jpg","frames/f0582.jpg","frames/f0583.jpg","frames/f0584.jpg","frames/f0585.jpg","frames/f0586.jpg","frames/f0587.jpg","frames/f0588.jpg","frames/f0589.jpg","frames/f0590.jpg","frames/f0591.jpg","frames/f0592.jpg","frames/f0593.jpg","frames/f0594.jpg","frames/f0595.jpg","frames/f0596.jpg","frames/f0597.jpg","frames/f0598.jpg","frames/f0599.jpg","frames/f0600.jpg","frames/f0601.jpg","frames/f0602.jpg","frames/f0603.jpg","frames/f0604.jpg","frames/f0605.jpg","frames/f0606.jpg","frames/f0607.jpg","frames/f0608.jpg","frames/f0609.jpg","frames/f0610.jpg","frames/f0611.jpg","frames/f0612.jpg","frames/f0613.jpg","frames/f0614.jpg","frames/f0615.jpg","frames/f0616.jpg","frames/f0617.jpg","frames/f0618.jpg","frames/f0619.jpg","frames/f0620.jpg","frames/f0621.jpg","frames/f0622.jpg","frames/f0623.jpg","frames/f0624.jpg","frames/f0625.jpg","frames/f0626.jpg","frames/f0627.jpg","frames/f0628.jpg","frames/f0629.jpg","frames/f0630.jpg","frames/f0631.jpg","frames/f0632.jpg","frames/f0633.jpg","frames/f0634.jpg","frames/f0635.jpg","frames/f0636.jpg","frames/f0637.jpg","frames/f0638.jpg","frames/f0639.jpg","frames/f0640.jpg","frames/f0641.jpg","frames/f0642.jpg","frames/f0643.jpg","frames/f0644.jpg","frames/f0645.jpg","frames/f0646.jpg","frames/f0647.jpg","frames/f0648.jpg","frames/f0649.jpg","frames/f0650.jpg","frames/f0651.jpg","frames/f0652.jpg","frames/f0653.jpg","frames/f0654.jpg","frames/f0655.jpg","frames/f0656.jpg","frames/f0657.jpg","frames/f0658.jpg","frames/f0659.jpg","frames/f0660.jpg","frames/f0661.jpg","frames/f0662.jpg","frames/f0663.jpg","frames/f0664.jpg","frames/f0665.jpg","frames/f0666.jpg","frames/f0667.jpg","frames/f0668.jpg","frames/f0669.jpg","frames/f0670.jpg","frames/f0671.jpg","frames/f0672.jpg","frames/f0673.jpg","frames/f0674.jpg","frames/f0675.jpg","frames/f0676.jpg","frames/f0677.jpg","frames/f0678.jpg","frames/f0679.jpg","frames/f0680.jpg","frames/f0681.jpg","frames/f0682.jpg","frames/f0683.jpg","frames/f0684.jpg","frames/f0685.jpg","frames/f0686.jpg","frames/f0687.jpg","frames/f0688.jpg","frames/f0689.jpg","frames/f0690.jpg","frames/f0691.jpg","frames/f0692.jpg","frames/f0693.jpg","frames/f0694.jpg","frames/f0695.jpg","frames/f0696.jpg","frames/f0697.jpg","frames/f0698.jpg","frames/f0699.jpg","frames/f0700.jpg","frames/f0701.jpg","frames/f0702.jpg","frames/f0703.jpg","frames/f0704.jpg","frames/f0705.jpg","frames/f0706.jpg","frames/f0707.jpg","frames/f0708.jpg","frames/f0709.jpg","frames/f0710.jpg","frames/f0711.jpg","frames/f0712.jpg","frames/f0713.jpg","frames/f0714.jpg","frames/f0715.jpg","frames/f0716.jpg","frames/f0717.jpg","frames/f0718.jpg","frames/f0719.jpg","frames/f0720.jpg","frames/f0721.jpg","frames/f0722.jpg","frames/f0723.jpg","frames/f0724.jpg","frames/f0725.jpg","frames/f0726.jpg","frames/f0727.jpg","frames/f0728.jpg","frames/f0729.jpg","frames/f0730.jpg","frames/f0731.jpg","frames/f0732.jpg","frames/f0733.jpg","frames/f0734.jpg","frames/f0735.jpg","frames/f0736.jpg","frames/f0737.jpg","frames/f0738.jpg","frames/f0739.jpg","frames/f0740.jpg","frames/f0741.jpg","frames/f0742.jpg","frames/f0743.jpg","frames/f0744.jpg","frames/f0745.jpg","frames/f0746.jpg","frames/f0747.jpg","frames/f0748.jpg","frames/f0749.jpg","frames/f0750.jpg","frames/f0751.jpg","frames/f0752.jpg","frames/f0753.jpg","frames/f0754.jpg","frames/f0755.jpg","frames/f0756.jpg","frames/f0757.jpg","frames/f0758.jpg","frames/f0759.jpg","frames/f0760.jpg","frames/f0761.jpg","frames/f0762.jpg","frames/f0763.jpg","frames/f0764.jpg","frames/f0765.jpg","frames/f0766.jpg","frames/f0767.jpg","frames/f0768.jpg","frames/f0769.jpg","frames/f0770.jpg","frames/f0771.jpg","frames/f0772.jpg","frames/f0773.jpg","frames/f0774.jpg","frames/f0775.jpg","frames/f0776.jpg","frames/f0777.jpg","frames/f0778.jpg","frames/f0779.jpg","frames/f0780.jpg","frames/f0781.jpg","frames/f0782.jpg","frames/f0783.jpg","frames/f0784.jpg","frames/f0785.jpg","frames/f0786.jpg","frames/f0787.jpg","frames/f0788.jpg","frames/f0789.jpg","frames/f0790.jpg","frames/f0791.jpg","frames/f0792.jpg","frames/f0793.jpg","frames/f0794.jpg","frames/f0795.jpg","frames/f0796.jpg","frames/f0797.jpg","frames/f0798.jpg","frames/f0799.jpg","frames/f0800.jpg","frames/f0801.jpg","frames/f0802.jpg","frames/f0803.jpg","frames/f0804.jpg","frames/f0805.jpg","frames/f0806.jpg","frames/f0807.jpg","frames/f0808.jpg"];
-const FPS=15, DURATION=53.9;
-const canvas=document.getElementById('visual'),ctx=canvas.getContext('2d');
-const app=document.getElementById('app'),audio=document.getElementById('song');
-const playBtn=document.getElementById('play'),seek=document.getElementById('seek');
-const elapsed=document.getElementById('elapsed'),total=document.getElementById('total');
-const status=document.getElementById('status'),loadedLabel=document.getElementById('loaded');
-const cache=new Map();let currentFrame=0,loading=0,playing=false,lastDraw=-1,raf=0;
-canvas.width=1200;canvas.height=730;
-function timeFmt(t){let m=Math.floor(t/60),s=Math.floor(t%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
-total.textContent=timeFmt(DURATION);
-function loadFrame(i){
-  if(i<0||i>=FRAMES.length||cache.has(i))return;
-  loading++;
-  const img=new Image();
-  img.onload=()=>{cache.set(i,img);loading--;loadedLabel.textContent=cache.size+' / '+FRAMES.length;if(i===0){draw(0);status.textContent='Ready — press Play';}};
-  img.onerror=()=>{loading--;status.textContent='Could not load '+FRAMES[i];};
-  img.src=FRAMES[i];
-}
-function warmAround(i){
-  for(let j=i;j<Math.min(FRAMES.length,i+75);j++)loadFrame(j);
-  // Keep a rolling window in memory on lower-RAM computers.
-  for(const k of cache.keys())if(k<i-15||k>i+100)cache.delete(k);
-}
-function draw(i){
-  const img=cache.get(i);
-  if(img){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);lastDraw=i;}
-}
-function tick(){
-  if(!playing)return;
-  const t=Math.min(audio.currentTime,DURATION);
-  currentFrame=Math.min(FRAMES.length-1,Math.floor(t*FPS));
-  warmAround(currentFrame);
-  if(currentFrame!==lastDraw)draw(currentFrame);
-  elapsed.textContent=timeFmt(t);
-  seek.value=Math.round(t/DURATION*1000);
-  if(t>=DURATION)pause();
-  else raf=requestAnimationFrame(tick);
-}
-function start(){audio.play().then(()=>{playing=true;playBtn.textContent='Ⅱ Pause';status.textContent='Playing';cancelAnimationFrame(raf);tick();}).catch(()=>{status.textContent='Tap Play to start audio';})}
-function pause(){playing=false;audio.pause();cancelAnimationFrame(raf);playBtn.textContent='▶ Play';}
-playBtn.addEventListener('click',()=>playing?pause():start());
-document.getElementById('restart').onclick=()=>{pause();audio.currentTime=0;currentFrame=0;warmAround(0);draw(0);elapsed.textContent='00:00';seek.value=0;};
-seek.addEventListener('input',()=>{const t=Number(seek.value)/1000*DURATION;audio.currentTime=t;currentFrame=Math.min(FRAMES.length-1,Math.floor(t*FPS));warmAround(currentFrame);draw(currentFrame);elapsed.textContent=timeFmt(t);});
-audio.addEventListener('ended',pause);
-document.getElementById('mute').onclick=()=>{audio.muted=!audio.muted;document.getElementById('mute').textContent=audio.muted?'×':'♫';};
-document.getElementById('volume').oninput=e=>audio.volume=Number(e.target.value);
-document.getElementById('fullscreen').onclick=()=>!document.fullscreenElement?app.requestFullscreen?.():document.exitFullscreen?.();
-for(let i=0;i<75;i++)loadFrame(i);
+/* ============================================================
+   GULAAB LYRICS — loaded from lyrics.json in the same folder
+   Format: [{ "time": 0, "text": "Line 1" }, ...]
+   Fallback embedded lyrics are used if lyrics.json fails to load.
+   ============================================================ */
+const FALLBACK_LYRICS = [
+  { time: 0,  text: "You make ordinary moments feel like magic." },
+  { time: 6,  text: "Every little thing you do feels like a dream." },
+  { time: 12, text: "The way you smile at me lights up my whole world." },
+  { time: 18, text: "I never knew a feeling quite like this before." },
+  { time: 24, text: "You're the reason my heart keeps beating." },
+  { time: 30, text: "And I'll keep falling for you, every single day." },
+  { time: 36, text: "Forever in a moment, just you and me." },
+  { time: 42, text: "Some feelings need no words — but here I am, writing them anyway." },
+  { time: 48, text: "You make ordinary moments feel like magic." }
+];
+
+(function(){
+  'use strict';
+
+  /* ---------- DOM refs ---------- */
+  const intro = document.getElementById('intro');
+  const show = document.getElementById('show');
+  const openBtn = document.getElementById('openBtn');
+  const chapterNo = document.getElementById('chapterNo');
+  const lyricSub = document.getElementById('lyricSub');
+  const lyricEl = document.getElementById('lyricGulaab');
+  const hintEl = document.getElementById('hint');
+
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('play');
+  const replayBtn = document.getElementById('replay');
+  const seekInput = document.getElementById('seek');
+  const timeDisplay = document.getElementById('time');
+  const volInput = document.getElementById('vol');
+  const spdInput = document.getElementById('spd');
+  const fsBtn = document.getElementById('fs');
+
+  const replayBtn2 = document.getElementById('replayBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const soundBtn = document.getElementById('soundBtn');
+
+  const editBtn = document.getElementById('editBtn');
+  const editDialog = document.getElementById('editDialog');
+  const editForm = document.getElementById('editForm');
+  const nameInput = document.getElementById('nameInput');
+  const messageInput = document.getElementById('messageInput');
+  const signInput = document.getElementById('signInput');
+  const audioInput = document.getElementById('audioInput');
+
+  const roseSvg = document.getElementById('roseGulaab');
+  const rosePaths = roseSvg.querySelectorAll('path');
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  const petals = document.getElementById('petals');
+  const pctx = petals.getContext('2d');
+
+  /* ---------- State ---------- */
+  let lyrics = [];
+  let currentLyricIndex = -1;
+  let isPlaying = false;
+  let rafId = null;
+  let particles = [];
+  let lastTime = 0;
+  let particleSpawnTimer = 0;
+  let roseDrawStart = 0;
+  let petalList = [];
+  let petalRaf = null;
+  let lastPetalTime = 0;
+  let showVisible = false;
+  let userMessage = null;
+  let userSignature = null;
+
+  /* ============================================================
+     LOAD FIXED LYRICS FROM lyrics.json
+     ============================================================ */
+  function loadLyricsFromData(data){
+    let arr = null;
+    if (Array.isArray(data)) arr = data;
+    else if (data && Array.isArray(data.lyrics)) arr = data.lyrics;
+    if (!arr){ useFallbackLyrics(); return; }
+    lyrics = arr
+      .filter(item => item && typeof item.time === 'number' && typeof item.text === 'string')
+      .map(item => ({ time: item.time, text: item.text.trim() }))
+      .sort((a,b)=>a.time-b.time);
+    if (!lyrics.length) useFallbackLyrics();
+    currentLyricIndex = -1;
+    if (showVisible) syncLyricToAudio();
+  }
+
+  function useFallbackLyrics(){
+    lyrics = FALLBACK_LYRICS.slice().sort((a,b)=>a.time-b.time);
+    currentLyricIndex = -1;
+  }
+
+  fetch('lyrics.json')
+    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+    .then(data => loadLyricsFromData(data))
+    .catch(() => {
+      useFallbackLyrics();
+      hintEl.hidden = false;
+      hintEl.textContent = 'Using built-in lyrics (could not load lyrics.json).';
+      setTimeout(() => { hintEl.hidden = true; }, 4000);
+    });
+
+  /* ============================================================
+     GULAAB ROSE DRAWING
+     ============================================================ */
+  function animateRose(timestamp){
+    if (!roseDrawStart) roseDrawStart = timestamp;
+    const elapsed = (timestamp - roseDrawStart) / 1000;
+    const totalPaths = rosePaths.length;
+    const drawDuration = 1.8;
+    const stagger = 0.15;
+    rosePaths.forEach((path, i) => {
+      const start = i * stagger;
+      const progress = Math.min(1, Math.max(0, (elapsed - start) / drawDuration));
+      const easeOut = 1 - Math.pow(1 - progress, 2);
+      if (easeOut >= 0.999){
+        path.style.strokeDashoffset = '0';
+        path.classList.add('drawn');
+      } else {
+        path.style.strokeDashoffset = (1 - easeOut).toFixed(4);
+      }
+    });
+    if (elapsed < totalPaths * stagger + drawDuration + 0.5){
+      requestAnimationFrame(animateRose);
+    } else {
+      rosePaths.forEach(p => { p.style.strokeDashoffset = '0'; });
+    }
+  }
+
+  /* ============================================================
+     GULAAB CANVAS PARTICLES
+     ============================================================ */
+  const MAX_PARTICLES = 140;
+
+  function resizeCanvas(){
+    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  function spawnParticle(){
+    if (particles.length >= MAX_PARTICLES) return;
+    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    const x = w * (0.2 + Math.random() * 0.6);
+    const y = h * (0.3 + Math.random() * 0.5);
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 0.3 + Math.random() * 1.4;
+    const size = 1.5 + Math.random() * 3.5;
+    const life = 1.2 + Math.random() * 2.2;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 0.6,
+      size, life, maxLife: life,
+      hue: 330 + Math.random() * 40,
+      lightness: 55 + Math.random() * 25,
+    });
+  }
+
+  function updateParticles(dt){
+    for (let i = particles.length - 1; i >= 0; i--){
+      const p = particles[i];
+      p.x += p.vx * dt * 60;
+      p.y += p.vy * dt * 60;
+      p.vy -= 0.004;
+      p.life -= dt;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function drawParticles(){
+    for (const p of particles){
+      const alpha = Math.max(0, p.life / p.maxLife) * 0.7;
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5);
+      grad.addColorStop(0, `hsla(${p.hue}, 90%, ${p.lightness}%, ${alpha})`);
+      grad.addColorStop(1, `hsla(${p.hue}, 90%, ${p.lightness}%, 0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function canvasLoop(timestamp){
+    const dt = Math.min(0.05, (timestamp - (lastTime || timestamp)) / 1000);
+    lastTime = timestamp;
+    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    if (isPlaying){
+      particleSpawnTimer += dt;
+      const spawnRate = 0.035;
+      while (particleSpawnTimer > spawnRate){
+        particleSpawnTimer -= spawnRate;
+        spawnParticle();
+      }
+    } else {
+      particleSpawnTimer += dt;
+      if (particleSpawnTimer > 0.12){
+        particleSpawnTimer -= 0.12;
+        spawnParticle();
+      }
+    }
+
+    updateParticles(dt);
+    drawParticles();
+    rafId = requestAnimationFrame(canvasLoop);
+  }
+
+  /* ============================================================
+     AUDIO & LYRICS SYNC (GULAAB)
+     ============================================================ */
+  function formatTime(sec){
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2,'0')}`;
+  }
+
+  function updateTimeDisplay(){
+    const cur = audio.currentTime || 0;
+    const dur = audio.duration || 0;
+    timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+    if (dur > 0) seekInput.value = Math.round((cur / dur) * 1000);
+  }
+
+  function findLyricIndex(time){
+    if (!lyrics.length) return -1;
+    let lo = 0, hi = lyrics.length - 1, result = -1;
+    while (lo <= hi){
+      const mid = (lo + hi) >> 1;
+      if (lyrics[mid].time <= time + 0.05){
+        result = mid; lo = mid + 1;
+      } else hi = mid - 1;
+    }
+    return result;
+  }
+
+  function syncLyricToAudio(){
+    if (!lyrics.length) return;
+    const idx = findLyricIndex(audio.currentTime);
+    if (idx !== currentLyricIndex){
+      currentLyricIndex = idx;
+      if (idx >= 0 && idx < lyrics.length){
+        lyricEl.style.opacity = '0';
+        lyricEl.style.transform = 'translateY(12px)';
+        void lyricEl.offsetHeight;
+        lyricEl.textContent = lyrics[idx].text;
+        lyricEl.style.opacity = '1';
+        lyricEl.style.transform = 'translateY(0)';
+        chapterNo.textContent = String(idx + 1).padStart(2, '0');
+      } else {
+        lyricEl.textContent = '';
+        lyricEl.style.opacity = '0';
+      }
+    }
+  }
+
+  function updateLyric(){
+    syncLyricToAudio();
+  }
+
+  /* ============================================================
+     PETALS CANVAS (ambient background)
+     ============================================================ */
+  function resizePetals(){
+    const dpr = window.devicePixelRatio || 1;
+    petals.width = window.innerWidth * dpr;
+    petals.height = window.innerHeight * dpr;
+    petals.style.width = window.innerWidth + 'px';
+    petals.style.height = window.innerHeight + 'px';
+    pctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resizePetals);
+  resizePetals();
+
+  function spawnPetal(){
+    const w = window.innerWidth;
+    petalList.push({
+      x: Math.random() * w,
+      y: -20 - Math.random() * 60,
+      size: 4 + Math.random() * 7,
+      speed: 0.4 + Math.random() * 1.1,
+      drift: (Math.random() - 0.5) * 0.6,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.02,
+      alpha: 0.15 + Math.random() * 0.35,
+      hue: 330 + Math.random() * 30
+    });
+  }
+
+  function startPetals(){
+    if (petalRaf) return;
+    lastPetalTime = performance.now();
+    function loop(now){
+      const dt = Math.min(0.05, (now - lastPetalTime) / 1000);
+      lastPetalTime = now;
+      const w = window.innerWidth, h = window.innerHeight;
+      pctx.clearRect(0, 0, w, h);
+      if (Math.random() < 0.55) spawnPetal();
+      for (let i = petalList.length - 1; i >= 0; i--){
+        const p = petalList[i];
+        p.y += p.speed * dt * 60;
+        p.x += p.drift * dt * 60;
+        p.rot += p.rotSpeed * dt * 60;
+        if (p.y > h + 40 || p.x < -60 || p.x > w + 60){ petalList.splice(i,1); continue; }
+        pctx.save();
+        pctx.translate(p.x, p.y);
+        pctx.rotate(p.rot);
+        pctx.globalAlpha = p.alpha;
+        pctx.fillStyle = `hsl(${p.hue}, 85%, 65%)`;
+        pctx.beginPath();
+        pctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
+        pctx.fill();
+        pctx.restore();
+      }
+      petalRaf = requestAnimationFrame(loop);
+    }
+    petalRaf = requestAnimationFrame(loop);
+  }
+
+  /* ============================================================
+     OPENING PAGE → SHOW
+     ============================================================ */
+  openBtn.addEventListener('click', () => {
+    intro.classList.add('hidden');
+    show.classList.add('visible');
+    showVisible = true;
+
+    // Re-trigger gulaab rose draw
+    roseDrawStart = 0;
+    rosePaths.forEach(p => { p.style.strokeDashoffset = '1'; p.classList.remove('drawn'); });
+    requestAnimationFrame(animateRose);
+
+    // Resize canvas and start gulaab loop
+    setTimeout(() => {
+      resizeCanvas();
+      if (!rafId) rafId = requestAnimationFrame(canvasLoop);
+    }, 100);
+
+    // Start petals ambient if not started
+    if (!petalRaf) startPetals();
+
+    // Start audio (user gesture)
+    if (audio.paused){
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        isPlaying = true;
+        playBtn.textContent = 'Pause';
+        soundBtn.classList.add('active');
+      }).catch(() => {});
+    }
+
+    // Initialize lyric
+    if (lyrics.length) syncLyricToAudio();
+  });
+
+  /* ============================================================
+     GULAAB AUDIO CONTROLS
+     ============================================================ */
+  function togglePlay(){
+    if (audio.paused){
+      audio.play().then(() => {
+        isPlaying = true;
+        playBtn.textContent = 'Pause';
+        soundBtn.classList.add('active');
+      }).catch(() => {});
+    } else {
+      audio.pause();
+      isPlaying = false;
+      playBtn.textContent = 'Play';
+      soundBtn.classList.remove('active');
+    }
+  }
+
+  playBtn.addEventListener('click', togglePlay);
+  replayBtn.addEventListener('click', () => {
+    audio.currentTime = 0;
+    currentLyricIndex = -1;
+    syncLyricToAudio();
+    if (audio.paused){
+      audio.play().then(() => {
+        isPlaying = true;
+        playBtn.textContent = 'Pause';
+      }).catch(() => {});
+    }
+    updateTimeDisplay();
+  });
+  replayBtn2.addEventListener('click', () => replayBtn.click());
+  soundBtn.addEventListener('click', togglePlay);
+
+  audio.addEventListener('play', () => {
+    isPlaying = true;
+    playBtn.textContent = 'Pause';
+    soundBtn.classList.add('active');
+  });
+  audio.addEventListener('pause', () => {
+    isPlaying = false;
+    playBtn.textContent = 'Play';
+    soundBtn.classList.remove('active');
+  });
+  audio.addEventListener('ended', () => {
+    isPlaying = false;
+    playBtn.textContent = 'Play';
+    soundBtn.classList.remove('active');
+  });
+  audio.addEventListener('timeupdate', () => {
+    updateTimeDisplay();
+    syncLyricToAudio();
+  });
+  audio.addEventListener('loadedmetadata', updateTimeDisplay);
+  audio.addEventListener('seeked', () => {
+    updateTimeDisplay();
+    currentLyricIndex = -1;
+    syncLyricToAudio();
+  });
+
+  /* Next moment */
+  nextBtn.addEventListener('click', () => {
+    if (!lyrics.length) return;
+    let next = currentLyricIndex + 1;
+    if (next >= lyrics.length) next = 0;
+    const target = lyrics[next].time;
+    if (audio.duration) audio.currentTime = Math.min(target, audio.duration - 0.1);
+    currentLyricIndex = -1;
+    syncLyricToAudio();
+    if (audio.paused){
+      audio.play().then(() => {
+        isPlaying = true;
+        playBtn.textContent = 'Pause';
+      }).catch(() => {});
+    }
+  });
+
+  /* Seek / vol / speed */
+  seekInput.addEventListener('input', () => {
+    if (audio.duration) audio.currentTime = (seekInput.value / 1000) * audio.duration;
+  });
+  volInput.addEventListener('input', () => {
+    audio.volume = parseFloat(volInput.value);
+  });
+  audio.volume = parseFloat(volInput.value);
+  spdInput.addEventListener('input', () => {
+    audio.playbackRate = parseFloat(spdInput.value);
+  });
+  audio.playbackRate = parseFloat(spdInput.value);
+
+  /* Fullscreen */
+  fsBtn.addEventListener('click', () => {
+    const el = document.getElementById('gulaabStage');
+    if (!document.fullscreenElement) el.requestFullscreen().catch(() => {});
+    else document.exitFullscreen();
+  });
+
+  /* ============================================================
+     PERSONALIZE DIALOG
+     ============================================================ */
+  editBtn.addEventListener('click', () => {
+    nameInput.value = localStorage.getItem('ff_name') || '';
+    messageInput.value = localStorage.getItem('ff_message') || 'You make ordinary moments feel like magic.';
+    signInput.value = localStorage.getItem('ff_sign') || '— with all my heart';
+    editDialog.showModal();
+  });
+
+  editForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const msg = messageInput.value.trim();
+    const sign = signInput.value.trim();
+    if (name) localStorage.setItem('ff_name', name);
+    if (msg) localStorage.setItem('ff_message', msg);
+    if (sign) localStorage.setItem('ff_sign', sign);
+    userMessage = msg || null;
+    userSignature = sign || null;
+    if (userSignature) lyricSub.textContent = userSignature;
+
+    const file = audioInput.files[0];
+    if (file){
+      const url = URL.createObjectURL(file);
+      audio.src = url;
+      audio.load();
+      if (showVisible){
+        audio.currentTime = 0;
+        currentLyricIndex = -1;
+        syncLyricToAudio();
+        audio.play().then(() => {
+          isPlaying = true;
+          playBtn.textContent = 'Pause';
+        }).catch(() => {});
+      }
+    }
+    editDialog.close();
+  });
+
+  document.querySelector('#editDialog .close').addEventListener('click', () => editDialog.close());
+
+  /* Load saved personalization */
+  (function loadSaved(){
+    const savedSign = localStorage.getItem('ff_sign');
+    if (savedSign){
+      userSignature = savedSign;
+      lyricSub.textContent = savedSign;
+    }
+  })();
+
+  /* ============================================================
+     KEYBOARD SHORTCUTS
+     ============================================================ */
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.code === 'Space' && showVisible){
+      e.preventDefault();
+      togglePlay();
+    }
+    if (e.code === 'ArrowRight' && showVisible) nextBtn.click();
+    if (e.code === 'ArrowLeft' && showVisible) replayBtn2.click();
+  });
+
+  /* Start petals ambient on page load */
+  startPetals();
+
+  /* Pre-start gulaab canvas when show becomes visible */
+  const observer = new MutationObserver(() => {
+    if (show.classList.contains('visible') && !rafId){
+      resizeCanvas();
+      rafId = requestAnimationFrame(canvasLoop);
+    }
+  });
+  observer.observe(show, { attributes: true, attributeFilter: ['class'] });
+
+})();
 </script>
-</body></html>
+</body>
+</html>
