@@ -5,50 +5,56 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Gulaab — animated lyrics</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Cinzel:wght@600;700;800;900&display=swap');
 /* ---- Customize here ---- */
 :root{
   --neon:#ff2d78; --neon2:#ff6a3d; --crimson:#b3001b; --burgundy:#3a0614; --black:#07020a;
-  --font:'Noto Sans Gurmukhi','Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;
-  --display:'Playfair Display','Noto Serif Gurmukhi',Georgia,serif;
-  --speed:1; /* animation speed multiplier, also set by the Speed slider */
+  --font:'Cormorant Garamond','Noto Serif Gurmukhi',Georgia,serif;
+  --display:'Cinzel','Cormorant Garamond',Georgia,serif;
+  --speed:1;
 }
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;background:var(--black);color:#fff;font-family:var(--font);overflow:hidden}
 #stage{position:fixed;inset:0 0 56px 0;overflow:hidden;background:var(--black)}
-.bg{position:absolute;inset:-6%;background-size:cover;background-position:center;transition:background 1.4s,opacity 1.4s;animation:cam calc(24s/var(--speed)) ease-in-out infinite alternate}
-@keyframes cam{to{transform:scale(1.08) translate(-1%,1%)}}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;will-change:auto}
 .scene-night .bg{background:radial-gradient(ellipse at 30% 70%,#5a0a2a,transparent 60%),radial-gradient(ellipse at 80% 20%,var(--burgundy),var(--black) 70%)}
 .scene-rose .bg{background:radial-gradient(circle at 25% 60%,#7a0a35,transparent 55%),radial-gradient(circle at 70% 30%,#3a0614,var(--black) 75%)}
 .scene-fire .bg{background:radial-gradient(circle at 50% 110%,#ff6a3d,var(--crimson) 35%,var(--black) 75%)}
 .scene-dusk .bg{background:linear-gradient(180deg,#2a0a3a,#a8305a 60%,#ff9a6a)}
 .scene-crimson .bg{background:radial-gradient(circle at 50% 50%,#d1002b,#4a0010 70%,var(--black))}
-.rays{position:absolute;inset:0;background:conic-gradient(from 200deg at 50% -10%,transparent,rgba(255,80,120,.16) 8%,transparent 16%,rgba(255,120,80,.1) 26%,transparent 36%);mix-blend-mode:screen;animation:ray calc(14s/var(--speed)) ease-in-out infinite alternate}
-@keyframes ray{from{opacity:.4;transform:rotate(-4deg)}to{opacity:1;transform:rotate(4deg)}}
+.rays{position:absolute;inset:0;background:conic-gradient(from 200deg at 50% -10%,transparent,rgba(255,80,120,.12) 8%,transparent 16%,rgba(255,120,80,.08) 26%,transparent 36%);pointer-events:none;animation:ray 14s ease-in-out infinite alternate}
+@keyframes ray{from{opacity:.55}to{opacity:.9}}
 #fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#rose{position:absolute;left:8%;top:50%;height:min(62vh,70vw);transform:translateY(-50%);opacity:0;transition:opacity 1s;filter:drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 22px var(--neon));animation:pulse calc(3s/var(--speed)) ease-in-out infinite}
+#rose{position:absolute;left:8%;top:50%;height:min(62vh,70vw);transform:translateY(-50%);opacity:0;transition:opacity .5s;filter:drop-shadow(0 0 7px var(--neon))}
 #rose path{stroke-dasharray:1;stroke-dashoffset:1}
 .scene-rose #rose{opacity:1}
 .scene-rose #rose path{animation:draw calc(1.6s/var(--speed)) ease forwards}
 .scene-rose #rose path:nth-child(2){animation-delay:.5s}.scene-rose #rose path:nth-child(3){animation-delay:.9s}
 .scene-rose #rose path:nth-child(4){animation-delay:1.3s}.scene-rose #rose path:nth-child(5){animation-delay:2s}.scene-rose #rose path:nth-child(6){animation-delay:2.3s}
 @keyframes draw{to{stroke-dashoffset:0}}
-@keyframes pulse{50%{filter:drop-shadow(0 0 14px var(--neon)) drop-shadow(0 0 40px var(--neon))}}
 #lyric{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6vh 7vw;text-align:center;align-items:center}
 .scene-rose #lyric{align-items:flex-start;text-align:left;padding-left:min(46vw,60%)}
-.line{font-size:clamp(1.6rem,5.2vw,4.2rem);line-height:1.25;font-weight:600;text-shadow:0 0 18px rgba(255,45,120,.55);animation:lineOut .9s calc(var(--out,0s)) forwards}
-@keyframes lineOut{to{opacity:0;filter:blur(10px);transform:scale(1.06)}}
-.w{display:inline-block;margin:0 .14em;opacity:0;filter:blur(14px);transform:translateY(.4em) scale(.9);animation:wIn calc(.8s/var(--speed)) calc(var(--d)/var(--speed)) cubic-bezier(.2,.8,.2,1) forwards}
-@keyframes wIn{to{opacity:1;filter:blur(0);transform:none}}
-.w.hl{color:var(--neon);font-family:var(--display);font-style:italic;text-shadow:0 0 10px var(--neon),0 0 30px var(--neon);animation:wIn calc(.8s/var(--speed)) calc(var(--d)/var(--speed)) forwards,glow calc(2s/var(--speed)) ease-in-out infinite alternate}
-@keyframes glow{to{text-shadow:0 0 18px var(--neon),0 0 54px var(--neon2)}}
-.kin{position:relative;width:100%;height:1.4em}
-.kin .w{position:absolute;left:0;right:0;margin:0;font-size:1.9em;font-weight:900;letter-spacing:.04em;text-transform:uppercase;animation:kin var(--t) var(--d) both}
-@keyframes kin{0%{opacity:0;transform:scale(2.4);filter:blur(18px)}18%{opacity:1;transform:scale(1);filter:blur(0)}80%{opacity:1;transform:scale(1.06)}100%{opacity:0;transform:scale(1.3);filter:blur(10px)}}
-.kin .w:nth-child(3n+1){-webkit-text-stroke:2px var(--neon);color:transparent}
-.kin .w:nth-child(3n+2){background:linear-gradient(90deg,#4aa8ff,#a56bff,var(--neon));-webkit-background-clip:text;background-clip:text;color:transparent}
+.line{font-family:var(--font);font-size:clamp(1.35rem,3.4vw,2.75rem);line-height:1.28;font-weight:600;letter-spacing:.015em;text-shadow:0 0 16px rgba(255,45,120,.58),0 0 30px rgba(255,45,120,.22);animation:lineOut .65s calc(var(--out,0s)) forwards;will-change:opacity,transform}
+@keyframes lineOut{to{opacity:0;transform:scale(1.035)}}
+.w{display:inline-block;margin:0 .14em;opacity:0;font-family:var(--font);font-weight:700;letter-spacing:.01em;transform:translateY(.28em) scale(.94);animation:wIn .65s calc(var(--d)) cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes wIn{to{opacity:1;transform:none}}
+.w.hl{color:#ff6b9f;font-family:var(--display);font-style:italic;font-weight:700;letter-spacing:.025em;text-shadow:0 0 7px rgba(255,45,120,.95),0 0 16px rgba(255,45,120,.72),0 0 28px rgba(255,45,120,.35);animation:wIn .65s calc(var(--d)) cubic-bezier(.2,.8,.2,1) forwards}
+.kin{position:relative;width:100%;min-height:1.4em;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.08em .22em}
+.kin .w{position:relative;display:inline-block;margin:0;font-family:var(--display);font-size:1.05em;font-weight:800;letter-spacing:.035em;text-transform:uppercase;text-shadow:0 0 9px rgba(255,45,120,.85),0 0 22px rgba(255,45,120,.42);animation:kinReveal .32s var(--d) both}
+@keyframes kinReveal{0%{opacity:0;transform:translateY(.22em) scale(1.18)}70%{opacity:1;transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.kin .w:nth-child(3n+1){-webkit-text-stroke:2px var(--neon);color:transparent;text-shadow:0 0 8px rgba(255,45,120,.9),0 0 20px rgba(255,45,120,.5)}
+.kin .w:nth-child(3n+2){background:linear-gradient(90deg,#4aa8ff,#a56bff,var(--neon));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 5px rgba(255,45,120,.55))}
 .zoom{animation:zoomIn calc(5s/var(--speed)) ease-out both,lineOut .9s var(--out) forwards}
 @keyframes zoomIn{from{transform:scale(.85)}to{transform:scale(1.08)}}
-#hint{position:absolute;bottom:1rem;left:0;right:0;text-align:center;color:#ffb3c7;font-size:.9rem}
+
+@media(max-width:600px){
+  #lyric{padding:5vh 6vw}
+  .scene-rose #lyric{padding-left:6vw}
+  .line{font-size:clamp(1.15rem,6vw,2rem);line-height:1.3}
+  .kin{gap:.06em .16em}
+  .kin .w{font-size:.98em;letter-spacing:.02em}
+}
+\n#hint{position:absolute;bottom:1rem;left:0;right:0;text-align:center;color:#ffb3c7;font-size:.9rem}
 #bar{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;gap:.7rem;align-items:center;padding:0 .8rem;background:rgba(10,2,14,.92);border-top:1px solid #4a1030;font-size:.8rem;overflow-x:auto;white-space:nowrap}
 #bar button,.file{background:#2a0a1e;color:#fff;border:1px solid var(--neon);border-radius:999px;padding:.4rem .9rem;cursor:pointer;font:inherit}
 #bar button:hover,.file:hover{background:var(--neon)}
@@ -58,7 +64,22 @@ input[type=range]{accent-color:var(--neon)}
 label{display:flex;align-items:center;gap:.3rem}
 :focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:700px){.scene-rose #rose{left:50%;top:22%;transform:translate(-50%,-50%);height:30vh}.scene-rose #lyric{align-items:center;text-align:center;padding:42vh 6vw 0}}
-@media(prefers-reduced-motion:reduce){.bg,.rays,#rose{animation:none}.w,.kin .w{animation-duration:.01s!important;filter:none}}
+@media(prefers-reduced-motion:reduce){.rays{animation:none}.w,.kin .w{animation-duration:.01s!important;filter:none}}
+
+
+/* Smooth cinematic scene and lyric transitions */
+.bg{animation:sceneBackgroundIn 1.15s cubic-bezier(.22,.7,.2,1) both}
+@keyframes sceneBackgroundIn{
+  0%{opacity:.45;transform:scale(1.045);filter:blur(7px)}
+  100%{opacity:1;transform:scale(1);filter:blur(0)}
+}
+.line:not(.old){animation:lyricEnter .72s cubic-bezier(.2,.75,.25,1) both,lineOut .65s calc(var(--out,0s)) forwards}
+@keyframes lyricEnter{
+  0%{opacity:0;transform:translateY(16px) scale(.975);filter:blur(5px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+.kin .w{transition:color .35s ease,text-shadow .35s ease}
+#rose{transition:opacity 1s ease,filter 1s ease}
 
 </style>
 </head>
@@ -148,20 +169,21 @@ function render(t, force){
 
 /* ---------- particles (petals + embers) ---------- */
 const cv = $('fx'), cx = cv.getContext('2d'); let W,H,P=[];
-function resize(){ const d=Math.min(devicePixelRatio||1,2); W=cv.width=innerWidth*d; H=cv.height=cv.clientHeight*d;
-  P = Array.from({length: reduced ? 0 : Math.min(70, Math.floor(innerWidth/18))}, () => mk(true)); }
-function mk(init){ const d=Math.min(devicePixelRatio||1,2); return {x:Math.random()*W, y:init?Math.random()*H:-20*d, r:(2+Math.random()*7)*d, vy:(.3+Math.random()*.9)*d, vx:(Math.random()-.5)*.5*d, a:Math.random()*6.28, va:(Math.random()-.5)*.03, o:.25+Math.random()*.55, petal:Math.random()<.5}; }
-function drawFx(){ cx.clearRect(0,0,W,H);
-  for(const p of P){ p.y += p.vy*speed; p.x += (p.vx + Math.sin(p.a)*.4)*speed; p.a += p.va; if(p.y>H+20) Object.assign(p, mk(false));
-    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.a); cx.globalAlpha = p.o; cx.shadowBlur = 14; cx.shadowColor = '#ff2d78'; cx.fillStyle = p.petal ? '#ff4d8a' : '#ffb36a';
-    cx.beginPath(); p.petal ? cx.ellipse(0,0,p.r*1.4,p.r*.8,0,0,6.28) : cx.arc(0,0,p.r*.4,0,6.28); cx.fill(); cx.restore(); } }
+function resize(){ const d=Math.min(devicePixelRatio||1,1.25); W=cv.width=Math.round(innerWidth*d); H=cv.height=Math.round(cv.clientHeight*d);
+  P = Array.from({length: reduced ? 0 : Math.min(34, Math.floor(innerWidth/38))}, () => mk(true)); }
+function mk(init){ const d=Math.min(devicePixelRatio||1,1.25); return {x:Math.random()*W, y:init?Math.random()*H:-20*d, r:(2+Math.random()*5)*d, vy:(.3+Math.random()*.8)*d, vx:(Math.random()-.5)*.35*d, a:Math.random()*6.28, va:(Math.random()-.5)*.02, o:.25+Math.random()*.5, petal:Math.random()<.5}; }
+let lastFx = 0;
+function drawFx(ts){ if(ts-lastFx<33) return; lastFx=ts; cx.clearRect(0,0,W,H);
+  for(const p of P){ p.y += p.vy*speed*2; p.x += (p.vx + Math.sin(p.a)*.3)*speed*2; p.a += p.va*2; if(p.y>H+20) Object.assign(p, mk(false));
+    cx.globalAlpha=p.o; cx.fillStyle=p.petal?'#ff4d8a':'#ffb36a'; cx.beginPath(); if(p.petal) cx.ellipse(p.x,p.y,p.r*1.3,p.r*.75,p.a,0,6.283); else cx.arc(p.x,p.y,p.r*.35,0,6.283); cx.fill();
+  } cx.globalAlpha=1; }
 addEventListener('resize', resize); resize();
 
 /* ---------- main loop ---------- */
 function loop(ts){
   const dt = Math.min(.1, (ts-last)/1000); last = ts;
   if(playing && !hasAudio){ clock += dt*speed; if(clock >= duration){ clock = duration; setPlaying(false); } }
-  const t = now(); render(t); drawFx();
+  const t = now(); render(t); drawFx(ts);
   $('seek').value = duration ? t/duration*1000 : 0; $('time').textContent = fmt(t)+' / '+fmt(duration);
   requestAnimationFrame(loop);
 }
