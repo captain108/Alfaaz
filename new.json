@@ -1,0 +1,124 @@
+{
+  "title": "Gulaab",
+  "scenes": {
+    "night": "assets/images/",
+    "rose": "assets/images/",
+    "dusk": "assets/images/",
+    "crimson": "assets/images/",
+    "fire": "assets/images/"
+  },
+  "lines": [
+    {
+      "start": 1.39,
+      "end": 6.90,
+      "text": "Akhiyan de samnay tu baitha rawein der tak",
+      "anim": "words",
+      "scene": "night",
+      "highlight": ["Akhiyan", "tu"]
+    },
+    {
+      "start": 7.46,
+      "end": 13.04,
+      "text": "Vekhaan tennu raat saari, charhdi saveer tak",
+      "anim": "words",
+      "scene": "dusk",
+      "highlight": ["raat saari", "saveer"]
+    },
+    {
+      "start": 13.42,
+      "end": 18.96,
+      "text": "Baaghan vicho main te torrey tere layi gulaab ve",
+      "anim": "words",
+      "scene": "rose",
+      "highlight": ["gulaab"]
+    },
+    {
+      "start": 19.38,
+      "end": 24.40,
+      "text": "Main te bas kehnda rehnda, aap janab ve",
+      "anim": "words",
+      "scene": "rose",
+      "highlight": ["janab"]
+    },
+    {
+      "start": 24.68,
+      "end": 27.36,
+      "text": "Tu te taareyaan ton vi sohna ay",
+      "anim": "zoom",
+      "scene": "dusk",
+      "highlight": ["sohna"]
+    },
+    {
+      "start": 27.66,
+      "end": 30.37,
+      "text": "Tere varga koi na hona ay",
+      "anim": "kinetic",
+      "scene": "crimson",
+      "highlight": ["koi na"]
+    },
+    {
+      "start": 30.62,
+      "end": 33.28,
+      "text": "Tu te taareyaan ton vi sohna ay",
+      "anim": "zoom",
+      "scene": "dusk",
+      "highlight": ["sohna"]
+    },
+    {
+      "start": 33.66,
+      "end": 36.44,
+      "text": "Tere varga koi na hona ay",
+      "anim": "kinetic",
+      "scene": "crimson",
+      "highlight": ["hona"]
+    },
+    {
+      "start": 36.56,
+      "end": 39.78,
+      "text": "Jinna aunda si mainu pyar karna ji",
+      "anim": "words",
+      "scene": "fire",
+      "highlight": ["pyar"]
+    },
+    {
+      "start": 40.00,
+      "end": 42.60,
+      "text": "Main te tere naal kar leya ay",
+      "anim": "words",
+      "scene": "night",
+      "highlight": ["tere naal"]
+    },
+    {
+      "start": 42.66,
+      "end": 45.45,
+      "text": "Main te chum lawan, ohna rawaan nu",
+      "anim": "words",
+      "scene": "rose",
+      "highlight": ["chum lawan"]
+    },
+    {
+      "start": 45.62,
+      "end": 48.30,
+      "text": "Jithon ik vaari kaddi langheya tu",
+      "anim": "words",
+      "scene": "dusk",
+      "highlight": ["langheya tu"]
+    },
+    {
+      "start": 48.62,
+      "end": 51.32,
+      "text": "Gallan do hi ne, hor koi vi nai",
+      "anim": "kinetic",
+      "scene": "crimson",
+      "highlight": ["do hi", "koi vi nai"]
+    },
+    {
+      "start": 51.60,
+      "end": 53.24,
+      "text": "Ya te tu hi ay, ya te koi nai",
+      "anim": "zoom",
+      "scene": "fire",
+      "highlight": ["tu hi", "koi nai"]
+    }
+  ]
+}
