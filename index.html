@@ -81,9 +81,64 @@ label{display:flex;align-items:center;gap:.3rem}
 .kin .w{transition:color .35s ease,text-shadow .35s ease}
 #rose{transition:opacity 1s ease,filter 1s ease}
 
+
+/* Opening screen styles — original Gulaab styles below remain untouched */
+#welcomeScreen{
+  position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 38%,#4b102b 0%,#260817 44%,#10030b 100%);
+  color:#fff;font-family:'DM Sans',Arial,sans-serif;
+  opacity:1;visibility:visible;transform:scale(1);
+  transition:opacity 1.05s ease,visibility 1.05s ease,transform 1.05s ease;
+}
+#welcomeScreen:before,#welcomeScreen:after{
+  content:"";position:absolute;border:1px solid rgba(255,130,180,.13);border-radius:50%;
+  width:min(82vw,720px);aspect-ratio:1;animation:welcomePulse 8s ease-in-out infinite;
+}
+#welcomeScreen:after{width:min(110vw,950px);animation-delay:-4s}
+.welcome-glow{
+  position:absolute;width:42vw;height:42vw;min-width:260px;min-height:260px;border-radius:50%;
+  background:#e52b78;filter:blur(115px);opacity:.18;animation:welcomeGlow 7s ease-in-out infinite alternate;
+}
+.welcome-card{position:relative;z-index:1;width:min(92vw,760px);padding:30px 18px;text-align:center;animation:welcomeRise 1.2s cubic-bezier(.2,.75,.25,1) both}
+.welcome-top{font-size:.68rem;letter-spacing:.25em;color:#f2b6ce;margin-bottom:clamp(45px,9vh,88px)}
+.welcome-top span{color:#ff6da9;padding:0 10px}
+.welcome-eyebrow{font-size:.68rem;letter-spacing:.35em;color:#ff9fc4;margin-bottom:20px}
+.welcome-card h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.5rem,7vw,5.2rem);font-weight:500;line-height:1.08;letter-spacing:-.035em}
+.welcome-card h1 em{color:#ff9bc2;font-weight:500}
+.welcome-card p{font-size:clamp(.9rem,2vw,1.05rem);color:#e4c7d4;margin:22px 0 32px;letter-spacing:.04em}
+#openSurprise{border:1px solid rgba(255,178,208,.65);border-radius:999px;padding:15px 27px;background:linear-gradient(110deg,#8d1749,#d52c75);box-shadow:0 0 28px rgba(255,45,120,.22),inset 0 1px rgba(255,255,255,.2);color:white;font:600 .9rem 'DM Sans',Arial,sans-serif;letter-spacing:.02em;cursor:pointer;transition:transform .25s,box-shadow .25s}
+#openSurprise:hover{transform:translateY(-3px);box-shadow:0 0 38px rgba(255,45,120,.42)}
+#openSurprise span{padding-left:14px;font-size:1.1rem}
+.welcome-hint{font-size:.58rem;letter-spacing:.2em;color:#b88b9e;margin-top:28px}
+.welcome-footer{position:absolute;left:0;right:0;bottom:-15vh;font-size:.58rem;letter-spacing:.22em;color:#b88b9e}
+.welcome-footer span{color:#ff7cac;padding:0 9px}
+body.welcome-open #welcomeScreen{opacity:0;visibility:hidden;transform:scale(1.025);pointer-events:none}
+@keyframes welcomePulse{50%{transform:scale(1.08);opacity:.35}}
+@keyframes welcomeGlow{to{transform:scale(1.25);opacity:.25}}
+@keyframes welcomeRise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.welcome-top{letter-spacing:.16em;margin-bottom:11vh}.welcome-card h1{font-size:clamp(2.4rem,11vw,4rem)}.welcome-hint{font-size:.5rem;letter-spacing:.12em}}
+@media(prefers-reduced-motion:reduce){#welcomeScreen:before,#welcomeScreen:after,.welcome-glow,.welcome-card{animation:none}}
+
 </style>
 </head>
 <body>
+
+<!-- Romantic opening screen: overlays the original Gulaab page without changing it -->
+<section id="welcomeScreen" aria-label="Welcome">
+  <div class="welcome-orbit"></div>
+  <div class="welcome-orbit welcome-orbit-two"></div>
+  <div class="welcome-glow"></div>
+  <div class="welcome-card">
+    <div class="welcome-top"><span>♥</span> A LITTLE SOMETHING FOR YOU <span>♥</span></div>
+    <div class="welcome-eyebrow">MADE WITH LOVE</div>
+    <h1>Some feelings<br><em>need no words.</em></h1>
+    <p>A little moment, made just for you.</p>
+    <button id="openSurprise" type="button">Open your surprise <span>↗</span></button>
+    <div class="welcome-hint">TURN YOUR SOUND ON FOR THE FULL EXPERIENCE</div>
+    <div class="welcome-footer">CRAFTED FROM THE HEART <span>✦</span> JUST FOR YOU</div>
+  </div>
+</section>
+
 <div id="stage" class="scene-night">
   <div class="bg" id="bg"></div>
   <div class="rays"></div>
@@ -189,6 +244,14 @@ function loop(ts){
 }
 audio.onended = () => setPlaying(false);
 requestAnimationFrame(loop);
+
+
+/* Opening-page handoff; original Gulaab playback and lyric engine remain unchanged */
+document.getElementById('openSurprise').addEventListener('click', () => {
+  document.body.classList.add('welcome-open');
+  const originalPlayButton = document.getElementById('play');
+  if (originalPlayButton) originalPlayButton.click();
+});
 
 </script>
 </body>
