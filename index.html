@@ -9,15 +9,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
 <style>
-  /* ===== RESET & BASE ===== */
+  /* ================= GLOBAL ================= */
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
   :root{
     --ink:#f7eaf0;
     --muted:#b48a9e;
     --rose:#ff5fb0;
     --rose-deep:#ff168f;
-    --bg:#16000b;
-    --card:#20060f;
     --line:rgba(255,120,180,.15);
     --font-sans:'DM Sans', system-ui, sans-serif;
     --font-serif:'Playfair Display', Georgia, serif;
@@ -26,64 +24,55 @@
   }
   html,body{ height:100%; }
   body{
-    background: radial-gradient(ellipse at 50% 0%, #2b0617 0%, #16000b 55%, #0d0006 100%);
+    background: #0b0b12;
     color:var(--ink);
     font-family:var(--font-sans);
     overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
   }
-  /* ambient glow */
-  .ambient{
-    position:fixed; inset:0; pointer-events:none; z-index:0;
+
+  /* ================= OPENING PAGE (For You) ================= */
+  .opening{
+    position:fixed; inset:0; z-index:100;
+    background: radial-gradient(ellipse at 50% 0%, #2b0617 0%, #16000b 55%, #0d0006 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:2rem 1.5rem;
+    transition: opacity .8s ease, visibility .8s ease;
+    overflow:hidden;
+  }
+  .opening.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .opening .ambient{
+    position:absolute; inset:0; pointer-events:none; z-index:0;
     background:
-      radial-gradient(circle at 20% 20%, rgba(255,60,140,.12), transparent 40%),
-      radial-gradient(circle at 80% 70%, rgba(255,40,120,.10), transparent 45%),
-      radial-gradient(circle at 50% 100%, rgba(255,90,160,.06), transparent 60%);
+      radial-gradient(circle at 20% 20%, rgba(255,60,140,.14), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(255,40,120,.12), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(255,90,160,.08), transparent 60%);
     animation: breathe 9s ease-in-out infinite alternate;
   }
   @keyframes breathe{ from{opacity:.6; transform:scale(1);} to{opacity:1; transform:scale(1.05);} }
-  #petals{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
 
-  /* ===== STAGE LAYOUT ===== */
-  .stage{
-    position:relative; z-index:2; min-height:100vh;
-    display:flex; flex-direction:column; align-items:center;
-    padding: clamp(1.2rem, 3vw, 2.4rem) clamp(1rem, 4vw, 2.5rem) 2.2rem;
-    max-width:1080px; margin:0 auto;
+  .opening .content{
+    position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:1.1rem;
+    max-width:600px;
   }
-
-  /* ===== TOP LINE ===== */
-  .topline{
-    font-size:.68rem; letter-spacing:.32em; color:var(--muted);
-    display:flex; align-items:center; gap:.7em; text-transform:uppercase;
-    margin-bottom: clamp(1.5rem, 4vw, 3rem); text-align:center;
+  .opening .eyebrow{
+    font-size:.68rem; letter-spacing:.4em; color:var(--rose);
+    text-transform:uppercase; font-weight:600;
   }
-  .tiny-heart{ color:var(--rose); font-size:.9em; animation: heartbeat 1.8s ease-in-out infinite; }
-  @keyframes heartbeat{ 0%,100%{transform:scale(1);} 12%{transform:scale(1.25);} 24%{transform:scale(1);} 36%{transform:scale(1.18);} 48%{transform:scale(1);} }
-
-  /* ===== INTRO (opening page) ===== */
-  .intro{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; gap:1.2rem; padding:2rem 0 3rem;
-    transition: opacity .6s ease, transform .6s ease, visibility .6s;
-  }
-  .intro.hidden{
-    opacity:0; transform:scale(.96); visibility:hidden; pointer-events:none;
-    position:absolute; inset:0; display:flex;
-  }
-  .eyebrow{
-    font-size:.68rem; letter-spacing:.4em; color:var(--rose); text-transform:uppercase; font-weight:600;
-  }
-  .intro h1{
+  .opening h1{
     font-family:var(--font-serif); font-weight:600; line-height:1.05;
     font-size: clamp(2.6rem, 8vw, 5.4rem); letter-spacing:-.01em;
   }
-  .intro h1 em{
+  .opening h1 em{
     font-style:italic; font-weight:500;
     background:linear-gradient(120deg, #ffd1e8, #ff63c8 55%, #ff168f);
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
-  .intro p{ color:var(--muted); font-size: clamp(.95rem, 2vw, 1.12rem); max-width:34ch; line-height:1.6; }
+  .opening p{
+    color:var(--muted); font-size: clamp(.95rem, 2vw, 1.12rem);
+    max-width:34ch; line-height:1.6;
+  }
   .open-button{
     margin-top:1rem; cursor:pointer; font-family:var(--font-sans); font-weight:600;
     font-size: clamp(.95rem, 2vw, 1.05rem);
@@ -93,7 +82,7 @@
     background: linear-gradient(135deg, rgba(255,60,140,.9), rgba(255,20,110,.95));
     box-shadow: 0 0 0 rgba(255,60,140,0), 0 14px 40px -10px rgba(255,40,120,.6);
     display:inline-flex; align-items:center; gap:.7em;
-    transition: transform .25s ease, box-shadow .3s ease, background .3s;
+    transition: transform .25s ease, box-shadow .3s ease;
     position:relative; overflow:hidden;
   }
   .open-button::after{
@@ -105,40 +94,49 @@
   .open-button:hover::after{ transform:translateX(120%); }
   .open-button span{ font-size:1.1em; transition: transform .25s; }
   .open-button:hover span{ transform: translate(3px,-3px); }
-  .hint{ font-size:.62rem; letter-spacing:.28em; color:#7a4d61; text-transform:uppercase; margin-top:.6rem; }
-
-  /* ===== SHOW (lyrics player) — hidden until opened ===== */
-  .show{
-    flex:1; width:100%; display:flex; flex-direction:column; align-items:center;
-    gap: clamp(1rem, 2.5vw, 1.6rem); padding-top:1rem;
-    opacity:0; visibility:hidden; transform:translateY(16px);
-    transition: opacity .7s ease .1s, transform .7s ease .1s, visibility .7s;
+  .opening .hint{
+    font-size:.62rem; letter-spacing:.28em; color:#7a4d61;
+    text-transform:uppercase; margin-top:.6rem;
   }
-  .show.visible{ opacity:1; visibility:visible; transform:translateY(0); }
-
-  .scene-label{
-    font-size:.64rem; letter-spacing:.28em; color:var(--muted);
-    text-transform:uppercase; display:flex; align-items:center; gap:.8em;
+  .opening .tiny-heart{
+    color:var(--rose); font-size:.9em; animation: heartbeat 1.8s ease-in-out infinite;
   }
-  .scene-label i{ display:inline-block; width:2.2rem; height:1px; background:linear-gradient(90deg,var(--rose),transparent); }
-  .scene-label span{ color:var(--rose); font-weight:600; }
+  @keyframes heartbeat{
+    0%,100%{transform:scale(1);} 12%{transform:scale(1.25);} 24%{transform:scale(1);}
+    36%{transform:scale(1.18);} 48%{transform:scale(1);}
+  }
+  .opening .topline{
+    position:absolute; top:clamp(1.2rem,4vw,2.4rem);
+    font-size:.68rem; letter-spacing:.32em; color:var(--muted);
+    display:flex; align-items:center; gap:.7em; text-transform:uppercase;
+  }
 
-  /* ===== GULAAB ANIMATED STAGE ===== */
-  #gulaabStage{
-    position:relative; width:100%; flex:1; min-height: 46vh;
-    display:flex; align-items:center; justify-content:center;
-    border-radius:20px; overflow:hidden; margin:.6rem 0;
+  /* ================= GULAAB PLAYER (original layout, buttons trimmed) ================= */
+  .gulaab-wrap{
+    position:fixed; inset:0; z-index:50;
+    display:flex; flex-direction:column;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition: opacity .8s ease .2s, visibility .8s;
+    background:#0b0b12;
+  }
+  .gulaab-wrap.visible{ opacity:1; visibility:visible; pointer-events:auto; }
+
+  /* Original #stage */
+  #stage{
+    position:relative; flex:1 1 auto; overflow:hidden;
     background: radial-gradient(circle at 30% 40%, #1a1a2e, #0a0a12);
-    box-shadow: 0 0 0 1px rgba(255,120,180,.08), 0 20px 60px -20px #000;
+    display:flex; align-items:center; justify-content:center;
+    min-height:0;
   }
-  #gulaabStage .bg{
+  .scene-night{ --neon:#ff4d8c; --glow:#ff99bb; }
+  .bg{
     position:absolute; inset:0;
     background: radial-gradient(circle at 70% 30%, #2e1a2e, #0a0a12 80%);
     z-index:0;
   }
-  #gulaabStage .rays{
+  .rays{
     position:absolute; inset:0;
-    background: conic-gradient(from 0deg at 70% 30%, transparent 0deg, rgba(255, 80, 140, 0.08) 20deg, transparent 40deg, transparent 360deg);
+    background: conic-gradient(from 0deg at 70% 30%, transparent 0deg, rgba(255,80,140,0.08) 20deg, transparent 40deg, transparent 360deg);
     animation: rotateRays 18s linear infinite;
     z-index:0; pointer-events:none;
   }
@@ -147,9 +145,9 @@
     position:absolute; inset:0; width:100%; height:100%;
     z-index:1; pointer-events:none;
   }
-  #roseGulaab{
+  #rose{
     position:relative; z-index:2;
-    width: min(42vw, 38vh); height:auto;
+    width: min(50vw, 50vh); height:auto;
     filter: drop-shadow(0 0 18px var(--neon)) drop-shadow(0 0 40px #ff2d6f88);
     animation: pulseRose 3s ease-in-out infinite alternate;
   }
@@ -157,130 +155,59 @@
     0% { filter: drop-shadow(0 0 12px var(--neon)) drop-shadow(0 0 30px #ff2d6f66); }
     100% { filter: drop-shadow(0 0 24px var(--glow)) drop-shadow(0 0 60px #ff2d6fcc); }
   }
-  #roseGulaab path{
-    stroke-dasharray: 1; stroke-dashoffset: 1;
-    transition: stroke-dashoffset .1s;
+  #rose path{
+    stroke-dasharray:1; stroke-dashoffset:1; transition: stroke-dashoffset .1s;
   }
-  #roseGulaab path.drawn{ stroke-dashoffset: 0; }
-
-  #lyricGulaab{
-    position:absolute; bottom:8%; left:0; width:100%; text-align:center;
-    font-size: clamp(1.3rem, 5vw, 2.6rem); font-weight:700; letter-spacing:.02em;
-    color:#fff; text-shadow: 0 0 20px var(--neon), 0 0 60px #ff2d6faa, 0 2px 4px #000;
-    padding: 0 1rem; z-index:3; min-height: 2.4em;
+  #rose path.drawn{ stroke-dashoffset:0; }
+  #lyric{
+    position:absolute; bottom:12%; left:0; width:100%;
+    text-align:center; font-size: clamp(1.6rem, 6vw, 3.2rem);
+    font-weight:700; letter-spacing:.02em; color:#fff;
+    text-shadow: 0 0 20px var(--neon), 0 0 60px #ff2d6faa, 0 2px 4px #000;
+    padding:0 1rem; z-index:3; min-height:3em;
     transition: opacity .3s, transform .3s; pointer-events:none; line-height:1.3;
   }
   #hint{
     position:absolute; top:1rem; left:50%; transform:translateX(-50%);
     background:#000000cc; padding:.5rem 1.2rem; border-radius:2rem;
-    font-size:.85rem; border:1px solid #ff4d8c66; backdrop-filter: blur(6px);
-    z-index:10; white-space:nowrap; color:#fff;
+    font-size:.9rem; border:1px solid #ff4d8c66;
+    backdrop-filter: blur(6px); z-index:10; white-space:nowrap; color:#fff;
   }
 
-  /* ===== BAR (gulaab controls) ===== */
+  /* Original #bar — MP3, Lyrics, Speed removed */
   #bar{
-    width:100%; display:flex; flex-wrap:wrap; align-items:center;
-    gap:.5rem .9rem; padding:.7rem .9rem; border-radius:16px;
-    background:#0f0f1a; border:1px solid #2a2a3a; z-index:20;
-    font-size:.8rem; margin-top:.4rem;
+    flex:0 0 auto; display:flex; flex-wrap:wrap; align-items:center;
+    gap:0.6rem 1rem; padding:0.6rem 1rem;
+    background:#0f0f1a; border-top:1px solid #2a2a3a;
+    z-index:20; font-size:0.85rem;
   }
   #bar button{
     background:#1f1f2e; border:1px solid #3a3a50; color:#ddd;
-    padding:.4rem 1rem; border-radius:2rem; font-weight:600; cursor:pointer;
-    transition: background .2s, border-color .2s; font-size:.8rem;
-    line-height:1.2; white-space:nowrap;
+    padding:0.4rem 1rem; border-radius:2rem; font-weight:600;
+    cursor:pointer; transition: background .2s, border-color .2s;
+    font-size:0.85rem; line-height:1.2; white-space:nowrap;
   }
-  #bar button:hover{ background:#2e2e42; border-color:var(--rose); }
+  #bar button:hover{ background:#2e2e42; border-color:var(--neon); }
   #bar button:active{ background:#3e2e4e; }
-  #bar input[type="range"]{ accent-color:var(--rose); background:transparent; cursor:pointer; width:100px; max-width:18vw; }
-  #seek{ flex:1 1 160px; min-width:90px; }
-  #time{ font-variant-numeric:tabular-nums; color:#aaa; min-width:5.2em; text-align:center; }
-  #bar label{ display:flex; align-items:center; gap:.3rem; color:#bbb; white-space:nowrap; }
-  #bar label.file{
-    cursor:pointer; background:#1f1f2e; padding:.3rem .7rem;
-    border-radius:2rem; border:1px solid #3a3a50;
+  #bar input[type="range"]{
+    accent-color:var(--neon); background:transparent; cursor:pointer;
+    width:120px; max-width:20vw;
   }
-  #bar label.file:hover{ background:#2e2e42; border-color:var(--rose); }
-  #bar input[type="file"]{ display:none; }
+  #seek{ flex:1 1 180px; min-width:100px; }
+  #time{
+    font-variant-numeric:tabular-nums; color:#aaa;
+    min-width:5.5em; text-align:center;
+  }
+  #bar label{
+    display:flex; align-items:center; gap:0.3rem;
+    color:#bbb; white-space:nowrap;
+  }
 
-  /* ===== CONTROLS (next / replay / sound) ===== */
-  .controls{ display:flex; align-items:center; gap: clamp(.8rem, 2vw, 1.2rem); margin-top:.2rem; }
-  .round-control{
-    width:44px; height:44px; border-radius:50%; cursor:pointer;
-    background:rgba(255,255,255,.04); border:1px solid var(--line); color:var(--ink);
-    font-size:1.05rem; display:grid; place-items:center; transition: all .25s ease;
-  }
-  .round-control:hover{ background:rgba(255,60,140,.15); border-color:rgba(255,60,140,.5); transform:translateY(-2px); }
-  .round-control.active{ background:rgba(255,60,140,.2); border-color:var(--rose); color:#fff; }
-  .next-button{
-    cursor:pointer; font-family:var(--font-sans); font-weight:600; font-size:.88rem;
-    padding:.75rem 1.7rem; border-radius:100px;
-    border:1px solid rgba(255,120,180,.35); color:var(--ink);
-    background:linear-gradient(135deg, rgba(255,60,140,.16), rgba(255,20,110,.10));
-    display:inline-flex; align-items:center; gap:.55em; transition: all .25s ease;
-  }
-  .next-button:hover{ background:linear-gradient(135deg, rgba(255,60,140,.35), rgba(255,20,110,.25)); border-color:var(--rose); transform:translateY(-2px); }
-  .next-button span{ transition: transform .25s; }
-  .next-button:hover span{ transform:translateX(4px); }
-
-  footer{
-    margin-top:auto; padding-top:2rem; font-size:.6rem; letter-spacing:.3em;
-    color:#6b4255; text-transform:uppercase; text-align:center;
-  }
-  footer span{ color:var(--rose); }
-
-  /* ===== SETTINGS / EDIT ===== */
-  .settings{ position:fixed; top:1.2rem; right:1.2rem; z-index:20; }
-  #editBtn{
-    width:42px; height:42px; border-radius:50%; cursor:pointer;
-    background:rgba(20,4,12,.7); border:1px solid var(--line); color:var(--muted);
-    font-size:1.05rem; backdrop-filter:blur(8px); transition: all .25s;
-  }
-  #editBtn:hover{ color:var(--ink); border-color:var(--rose); transform:rotate(-12deg); }
-
-  dialog{
-    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:min(440px, 92vw); border:1px solid rgba(255,120,180,.2);
-    border-radius:20px; background:linear-gradient(160deg, #220712, #17040d);
-    color:var(--ink); padding:2rem 1.8rem 1.6rem; box-shadow:0 40px 120px -20px #000;
-  }
-  dialog::backdrop{ background:rgba(8,0,5,.7); backdrop-filter:blur(6px); }
-  dialog .close{
-    position:absolute; top:.9rem; right:.9rem; width:32px; height:32px; border-radius:50%;
-    background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--muted);
-    cursor:pointer; font-size:1.2rem; line-height:1; display:grid; place-items:center; transition:all .2s;
-  }
-  dialog .close:hover{ color:#fff; border-color:var(--rose); }
-  dialog h2{ font-family:var(--font-serif); font-weight:600; font-size:1.6rem; margin:.3rem 0 1.2rem; }
-  dialog label{ display:block; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
-  dialog input, dialog textarea{
-    display:block; width:100%; margin-top:.45rem; padding:.7rem .9rem;
-    background:rgba(0,0,0,.3); border:1px solid var(--line); border-radius:10px;
-    color:var(--ink); font-family:var(--font-sans); font-size:.9rem; resize:vertical;
-    transition: border-color .2s;
-  }
-  dialog input:focus, dialog textarea:focus{ outline:none; border-color:var(--rose); }
-  .upload-label input{ padding:.55rem .5rem; font-size:.75rem; }
-  .save-button{
-    width:100%; cursor:pointer; margin-top:.4rem; padding:.85rem; border-radius:100px;
-    border:none; font-family:var(--font-sans); font-weight:600; font-size:.92rem; color:#fff;
-    background:linear-gradient(135deg, var(--rose), var(--rose-deep));
-    transition: transform .2s, box-shadow .3s;
-  }
-  .save-button:hover{ transform:translateY(-2px); box-shadow:0 14px 34px -8px rgba(255,40,120,.7); }
-  .dialog-note{ font-size:.65rem; color:#7a4d61; margin-top:.9rem; line-height:1.5; }
-
-  /* responsive */
   @media (max-width:700px){
-    .topline{ font-size:.58rem; letter-spacing:.22em; }
-    .controls{ gap:.7rem; }
-    .next-button{ padding:.65rem 1.2rem; font-size:.8rem; }
-    #lyricGulaab{ font-size: clamp(1.1rem, 5vw, 1.6rem); }
-    .round-control{ width:40px; height:40px; }
-    #bar{ gap:.4rem .6rem; padding:.5rem .6rem; font-size:.72rem; }
-    #bar button, #bar label.file{ padding:.3rem .6rem; font-size:.72rem; }
-    #seek{ flex-basis:110px; }
-    #bar input[type="range"]{ width:60px; }
+    #bar{ gap:0.4rem 0.6rem; padding:0.5rem 0.6rem; }
+    #bar button{ padding:0.3rem 0.7rem; font-size:0.75rem; }
+    #seek{ flex-basis:120px; }
+    #bar input[type="range"]{ width:70px; }
   }
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
@@ -288,150 +215,73 @@
 </style>
 </head>
 <body>
-<div class="ambient"></div>
-<canvas id="petals" aria-hidden="true"></canvas>
 
-<main class="stage">
-  <div class="topline"><span class="tiny-heart">♥</span> A LITTLE SOMETHING FOR YOU <span class="tiny-heart">♥</span></div>
-
-  <!-- ===== OPENING PAGE (intro) ===== -->
-  <section class="intro" id="intro">
+<!-- ================= OPENING PAGE ================= -->
+<div class="opening" id="opening">
+  <div class="ambient"></div>
+  <div class="topline">
+    <span class="tiny-heart">♥</span> A LITTLE SOMETHING FOR YOU <span class="tiny-heart">♥</span>
+  </div>
+  <div class="content">
     <div class="eyebrow">MADE WITH LOVE</div>
     <h1>Some feelings<br><em>need no words.</em></h1>
     <p>A little moment, made just for you.</p>
     <button class="open-button" id="openBtn">Open your surprise <span>↗</span></button>
     <div class="hint">TURN YOUR SOUND ON FOR THE FULL EXPERIENCE</div>
-  </section>
-
-  <!-- ===== SHOW (lyrics player with Gulaab stage) ===== -->
-  <section class="show" id="show" aria-live="polite">
-    <div class="scene-label">CHAPTER <span id="chapterNo">01</span> <i></i> FOREVER IN A MOMENT</div>
-
-    <!-- GULAAB ANIMATED STAGE -->
-    <div id="gulaabStage" class="scene-night">
-      <div class="bg" id="bg"></div>
-      <div class="rays"></div>
-      <canvas id="fx"></canvas>
-      <svg id="roseGulaab" viewBox="0 0 200 300" aria-hidden="true">
-        <g fill="none" stroke="var(--neon)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path pathLength="1" d="M100 70c-22-2-34 14-30 32s26 26 44 18 20-30 4-42-34-6-38 10 6 22 20 20 12-14 2-16"/>
-          <path pathLength="1" d="M70 100c-24-8-40 6-36 28s24 36 46 34"/>
-          <path pathLength="1" d="M130 98c26-8 42 8 36 30s-24 34-46 32"/>
-          <path pathLength="1" d="M80 160c6 22 14 34 20 50v84"/>
-          <path pathLength="1" d="M100 250c-22-4-38-18-40-34 22 0 38 12 40 34z"/>
-          <path pathLength="1" d="M100 270c22-4 38-18 40-34-22 0-38 12-40 34z"/>
-        </g>
-      </svg>
-      <div id="lyricGulaab" aria-live="polite"></div>
-      <p id="hint" hidden>Pick <b>lyrics.json</b> to load your lyrics.</p>
-    </div>
-
-    <div class="lyric-sub" id="lyricSub">— with all my heart</div>
-
-    <!-- BAR controls for Gulaab audio -->
-    <div id="bar">
-      <button id="play" aria-label="Play">Play</button>
-      <button id="replay" aria-label="Replay">Replay</button>
-      <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Timeline">
-      <span id="time">0:00 / 0:00</span>
-      <label>Vol <input id="vol" type="range" min="0" max="1" step=".01" value=".8"></label>
-      <label>Speed <input id="spd" type="range" min=".5" max="2" step=".1" value="1"></label>
-      <button id="fs" aria-label="Fullscreen">Full screen</button>
-    </div>
-
-    <div class="controls">
-      <button class="round-control" id="replayBtn" aria-label="Replay">↺</button>
-      <button class="next-button" id="nextBtn">Next moment <span>→</span></button>
-      <button class="round-control" id="soundBtn" aria-label="Toggle sound">♫</button>
-    </div>
-  </section>
-
-  <footer>CRAFTED FROM THE HEART <span>✦</span> JUST FOR YOU</footer>
-</main>
-
-<!-- ===== SETTINGS / PERSONALIZE ===== -->
-<div class="settings">
-  <button id="editBtn" title="Personalize this page">✎</button>
+  </div>
 </div>
-<dialog id="editDialog">
-  <form method="dialog" id="editForm">
-    <button class="close" aria-label="Close">×</button>
-    <div class="eyebrow">MAKE IT YOURS</div>
-    <h2>Personalize your surprise</h2>
-    <label>Person's name<input id="nameInput" maxlength="28" placeholder="Someone special"></label>
-    <label>Your message<textarea id="messageInput" rows="3" maxlength="140">You make ordinary moments feel like magic.</textarea></label>
-    <label>Small signature<input id="signInput" maxlength="35" value="— with all my heart"></label>
-    <label class="upload-label">Background music (optional)<input id="audioInput" type="file" accept="audio/*"></label>
-    <button class="save-button" id="saveBtn">Save changes</button>
-    <p class="dialog-note">Music stays on your device; use audio you have permission to use.</p>
-  </form>
-</dialog>
 
-<!-- ===== FIXED AUDIO SOURCE: place song.mp3 in the same folder ===== -->
-<audio id="audio" preload="auto">
-  <source src="song.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
+<!-- ================= GULAAB PLAYER ================= -->
+<div class="gulaab-wrap" id="gulaabWrap">
+  <div id="stage" class="scene-night">
+    <div class="bg" id="bg"></div><div class="rays"></div>
+    <canvas id="fx"></canvas>
+    <svg id="rose" viewBox="0 0 200 300" aria-hidden="true">
+      <g fill="none" stroke="var(--neon)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path pathLength="1" d="M100 70c-22-2-34 14-30 32s26 26 44 18 20-30 4-42-34-6-38 10 6 22 20 20 12-14 2-16"/>
+        <path pathLength="1" d="M70 100c-24-8-40 6-36 28s24 36 46 34"/>
+        <path pathLength="1" d="M130 98c26-8 42 8 36 30s-24 34-46 32"/>
+        <path pathLength="1" d="M80 160c6 22 14 34 20 50v84"/>
+        <path pathLength="1" d="M100 250c-22-4-38-18-40-34 22 0 38 12 40 34z"/>
+        <path pathLength="1" d="M100 270c22-4 38-18 40-34-22 0-38 12-40 34z"/>
+      </g>
+    </svg>
+    <div id="lyric" aria-live="polite"></div>
+    <p id="hint" hidden>Opened from a file: pick <b>lyrics.json</b> to load your lyrics.</p>
+  </div>
+  <div id="bar">
+    <button id="play" aria-label="Play">Play</button>
+    <button id="replay" aria-label="Replay">Replay</button>
+    <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Timeline">
+    <span id="time">0:00 / 0:00</span>
+    <label>Vol <input id="vol" type="range" min="0" max="1" step=".01" value=".8"></label>
+    <button id="fs" aria-label="Fullscreen">Full screen</button>
+  </div>
+  <!-- Fixed audio source: song.mp3 in same folder -->
+  <audio id="audio" preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
 
 <script>
-/* ============================================================
-   GULAAB LYRICS — loaded from lyrics.json in the same folder
-   Format: [{ "time": 0, "text": "Line 1" }, ...]
-   Fallback embedded lyrics are used if lyrics.json fails to load.
-   ============================================================ */
-const FALLBACK_LYRICS = [
-  { time: 0,  text: "You make ordinary moments feel like magic." },
-  { time: 6,  text: "Every little thing you do feels like a dream." },
-  { time: 12, text: "The way you smile at me lights up my whole world." },
-  { time: 18, text: "I never knew a feeling quite like this before." },
-  { time: 24, text: "You're the reason my heart keeps beating." },
-  { time: 30, text: "And I'll keep falling for you, every single day." },
-  { time: 36, text: "Forever in a moment, just you and me." },
-  { time: 42, text: "Some feelings need no words — but here I am, writing them anyway." },
-  { time: 48, text: "You make ordinary moments feel like magic." }
-];
-
 (function(){
   'use strict';
 
-  /* ---------- DOM refs ---------- */
-  const intro = document.getElementById('intro');
-  const show = document.getElementById('show');
+  /* ================= OPENING → GULAAB TRANSITION ================= */
+  const opening = document.getElementById('opening');
+  const gulaabWrap = document.getElementById('gulaabWrap');
   const openBtn = document.getElementById('openBtn');
-  const chapterNo = document.getElementById('chapterNo');
-  const lyricSub = document.getElementById('lyricSub');
-  const lyricEl = document.getElementById('lyricGulaab');
-  const hintEl = document.getElementById('hint');
 
-  const audio = document.getElementById('audio');
-  const playBtn = document.getElementById('play');
-  const replayBtn = document.getElementById('replay');
-  const seekInput = document.getElementById('seek');
-  const timeDisplay = document.getElementById('time');
-  const volInput = document.getElementById('vol');
-  const spdInput = document.getElementById('spd');
-  const fsBtn = document.getElementById('fs');
+  let gulaabStarted = false;
 
-  const replayBtn2 = document.getElementById('replayBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const soundBtn = document.getElementById('soundBtn');
+  openBtn.addEventListener('click', () => {
+    opening.classList.add('hidden');
+    gulaabWrap.classList.add('visible');
+    startGulaab();
+  });
 
-  const editBtn = document.getElementById('editBtn');
-  const editDialog = document.getElementById('editDialog');
-  const editForm = document.getElementById('editForm');
-  const nameInput = document.getElementById('nameInput');
-  const messageInput = document.getElementById('messageInput');
-  const signInput = document.getElementById('signInput');
-  const audioInput = document.getElementById('audioInput');
-
-  const roseSvg = document.getElementById('roseGulaab');
-  const rosePaths = roseSvg.querySelectorAll('path');
-  const canvas = document.getElementById('fx');
-  const ctx = canvas.getContext('2d');
-  const petals = document.getElementById('petals');
-  const pctx = petals.getContext('2d');
-
-  /* ---------- State ---------- */
+  /* ================= GULAAB PLAYER LOGIC ================= */
   let lyrics = [];
   let currentLyricIndex = -1;
   let isPlaying = false;
@@ -440,79 +290,26 @@ const FALLBACK_LYRICS = [
   let lastTime = 0;
   let particleSpawnTimer = 0;
   let roseDrawStart = 0;
-  let petalList = [];
-  let petalRaf = null;
-  let lastPetalTime = 0;
-  let showVisible = false;
-  let userMessage = null;
-  let userSignature = null;
 
-  /* ============================================================
-     LOAD FIXED LYRICS FROM lyrics.json
-     ============================================================ */
-  function loadLyricsFromData(data){
-    let arr = null;
-    if (Array.isArray(data)) arr = data;
-    else if (data && Array.isArray(data.lyrics)) arr = data.lyrics;
-    if (!arr){ useFallbackLyrics(); return; }
-    lyrics = arr
-      .filter(item => item && typeof item.time === 'number' && typeof item.text === 'string')
-      .map(item => ({ time: item.time, text: item.text.trim() }))
-      .sort((a,b)=>a.time-b.time);
-    if (!lyrics.length) useFallbackLyrics();
-    currentLyricIndex = -1;
-    if (showVisible) syncLyricToAudio();
-  }
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  const roseSvg = document.getElementById('rose');
+  const rosePaths = roseSvg.querySelectorAll('path');
+  const lyricEl = document.getElementById('lyric');
+  const hintEl = document.getElementById('hint');
 
-  function useFallbackLyrics(){
-    lyrics = FALLBACK_LYRICS.slice().sort((a,b)=>a.time-b.time);
-    currentLyricIndex = -1;
-  }
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('play');
+  const replayBtn = document.getElementById('replay');
+  const seekInput = document.getElementById('seek');
+  const timeDisplay = document.getElementById('time');
+  const volInput = document.getElementById('vol');
+  const fsBtn = document.getElementById('fs');
 
-  fetch('lyrics.json')
-    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
-    .then(data => loadLyricsFromData(data))
-    .catch(() => {
-      useFallbackLyrics();
-      hintEl.hidden = false;
-      hintEl.textContent = 'Using built-in lyrics (could not load lyrics.json).';
-      setTimeout(() => { hintEl.hidden = true; }, 4000);
-    });
-
-  /* ============================================================
-     GULAAB ROSE DRAWING
-     ============================================================ */
-  function animateRose(timestamp){
-    if (!roseDrawStart) roseDrawStart = timestamp;
-    const elapsed = (timestamp - roseDrawStart) / 1000;
-    const totalPaths = rosePaths.length;
-    const drawDuration = 1.8;
-    const stagger = 0.15;
-    rosePaths.forEach((path, i) => {
-      const start = i * stagger;
-      const progress = Math.min(1, Math.max(0, (elapsed - start) / drawDuration));
-      const easeOut = 1 - Math.pow(1 - progress, 2);
-      if (easeOut >= 0.999){
-        path.style.strokeDashoffset = '0';
-        path.classList.add('drawn');
-      } else {
-        path.style.strokeDashoffset = (1 - easeOut).toFixed(4);
-      }
-    });
-    if (elapsed < totalPaths * stagger + drawDuration + 0.5){
-      requestAnimationFrame(animateRose);
-    } else {
-      rosePaths.forEach(p => { p.style.strokeDashoffset = '0'; });
-    }
-  }
-
-  /* ============================================================
-     GULAAB CANVAS PARTICLES
-     ============================================================ */
-  const MAX_PARTICLES = 140;
-
+  /* ---- Canvas ---- */
   function resizeCanvas(){
-    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
+    const rect = stage.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
@@ -522,9 +319,12 @@ const FALLBACK_LYRICS = [
   }
   window.addEventListener('resize', resizeCanvas);
 
+  /* ---- Particles ---- */
+  const MAX_PARTICLES = 140;
+
   function spawnParticle(){
     if (particles.length >= MAX_PARTICLES) return;
-    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
+    const rect = stage.getBoundingClientRect();
     const w = rect.width, h = rect.height;
     const x = w * (0.2 + Math.random() * 0.6);
     const y = h * (0.3 + Math.random() * 0.5);
@@ -569,9 +369,8 @@ const FALLBACK_LYRICS = [
   function canvasLoop(timestamp){
     const dt = Math.min(0.05, (timestamp - (lastTime || timestamp)) / 1000);
     lastTime = timestamp;
-    const rect = document.getElementById('gulaabStage').getBoundingClientRect();
-    const w = rect.width, h = rect.height;
-    ctx.clearRect(0, 0, w, h);
+    const rect = stage.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
 
     if (isPlaying){
       particleSpawnTimer += dt;
@@ -593,14 +392,37 @@ const FALLBACK_LYRICS = [
     rafId = requestAnimationFrame(canvasLoop);
   }
 
-  /* ============================================================
-     AUDIO & LYRICS SYNC (GULAAB)
-     ============================================================ */
+  /* ---- Rose drawing ---- */
+  function animateRose(timestamp){
+    if (!roseDrawStart) roseDrawStart = timestamp;
+    const elapsed = (timestamp - roseDrawStart) / 1000;
+    const totalPaths = rosePaths.length;
+    const drawDuration = 1.8;
+    const stagger = 0.15;
+    rosePaths.forEach((path, i) => {
+      const start = i * stagger;
+      const progress = Math.min(1, Math.max(0, (elapsed - start) / drawDuration));
+      const easeOut = 1 - Math.pow(1 - progress, 2);
+      if (easeOut >= 0.999){
+        path.style.strokeDashoffset = '0';
+        path.classList.add('drawn');
+      } else {
+        path.style.strokeDashoffset = (1 - easeOut).toFixed(4);
+      }
+    });
+    if (elapsed < totalPaths * stagger + drawDuration + 0.5){
+      requestAnimationFrame(animateRose);
+    } else {
+      rosePaths.forEach(p => { p.style.strokeDashoffset = '0'; });
+    }
+  }
+
+  /* ---- Lyrics ---- */
   function formatTime(sec){
     if (!isFinite(sec) || sec < 0) sec = 0;
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
-    return `${m}:${s.toString().padStart(2,'0')}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   function updateTimeDisplay(){
@@ -622,8 +444,8 @@ const FALLBACK_LYRICS = [
     return result;
   }
 
-  function syncLyricToAudio(){
-    if (!lyrics.length) return;
+  function updateLyric(){
+    if (!lyrics.length){ lyricEl.textContent = ''; return; }
     const idx = findLyricIndex(audio.currentTime);
     if (idx !== currentLyricIndex){
       currentLyricIndex = idx;
@@ -634,7 +456,6 @@ const FALLBACK_LYRICS = [
         lyricEl.textContent = lyrics[idx].text;
         lyricEl.style.opacity = '1';
         lyricEl.style.transform = 'translateY(0)';
-        chapterNo.textContent = String(idx + 1).padStart(2, '0');
       } else {
         lyricEl.textContent = '';
         lyricEl.style.opacity = '0';
@@ -642,90 +463,108 @@ const FALLBACK_LYRICS = [
     }
   }
 
-  function updateLyric(){
-    syncLyricToAudio();
-  }
+  function onTimeUpdate(){ updateTimeDisplay(); updateLyric(); }
+  function onLoadedMetadata(){ updateTimeDisplay(); if (lyrics.length) updateLyric(); }
 
-  /* ============================================================
-     PETALS CANVAS (ambient background)
-     ============================================================ */
-  function resizePetals(){
-    const dpr = window.devicePixelRatio || 1;
-    petals.width = window.innerWidth * dpr;
-    petals.height = window.innerHeight * dpr;
-    petals.style.width = window.innerWidth + 'px';
-    petals.style.height = window.innerHeight + 'px';
-    pctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  window.addEventListener('resize', resizePetals);
-  resizePetals();
-
-  function spawnPetal(){
-    const w = window.innerWidth;
-    petalList.push({
-      x: Math.random() * w,
-      y: -20 - Math.random() * 60,
-      size: 4 + Math.random() * 7,
-      speed: 0.4 + Math.random() * 1.1,
-      drift: (Math.random() - 0.5) * 0.6,
-      rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.02,
-      alpha: 0.15 + Math.random() * 0.35,
-      hue: 330 + Math.random() * 30
-    });
-  }
-
-  function startPetals(){
-    if (petalRaf) return;
-    lastPetalTime = performance.now();
-    function loop(now){
-      const dt = Math.min(0.05, (now - lastPetalTime) / 1000);
-      lastPetalTime = now;
-      const w = window.innerWidth, h = window.innerHeight;
-      pctx.clearRect(0, 0, w, h);
-      if (Math.random() < 0.55) spawnPetal();
-      for (let i = petalList.length - 1; i >= 0; i--){
-        const p = petalList[i];
-        p.y += p.speed * dt * 60;
-        p.x += p.drift * dt * 60;
-        p.rot += p.rotSpeed * dt * 60;
-        if (p.y > h + 40 || p.x < -60 || p.x > w + 60){ petalList.splice(i,1); continue; }
-        pctx.save();
-        pctx.translate(p.x, p.y);
-        pctx.rotate(p.rot);
-        pctx.globalAlpha = p.alpha;
-        pctx.fillStyle = `hsl(${p.hue}, 85%, 65%)`;
-        pctx.beginPath();
-        pctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
-        pctx.fill();
-        pctx.restore();
-      }
-      petalRaf = requestAnimationFrame(loop);
+  /* ---- Play/Pause ---- */
+  function togglePlay(){
+    if (audio.paused){
+      audio.play().then(() => {
+        isPlaying = true;
+        playBtn.textContent = 'Pause';
+      }).catch(() => {});
+    } else {
+      audio.pause();
+      isPlaying = false;
+      playBtn.textContent = 'Play';
     }
-    petalRaf = requestAnimationFrame(loop);
   }
 
-  /* ============================================================
-     OPENING PAGE → SHOW
-     ============================================================ */
-  openBtn.addEventListener('click', () => {
-    intro.classList.add('hidden');
-    show.classList.add('visible');
-    showVisible = true;
+  playBtn.addEventListener('click', togglePlay);
+  audio.addEventListener('play', () => { isPlaying = true; playBtn.textContent = 'Pause'; });
+  audio.addEventListener('pause', () => { isPlaying = false; playBtn.textContent = 'Play'; });
+  audio.addEventListener('ended', () => { isPlaying = false; playBtn.textContent = 'Play'; });
+  audio.addEventListener('timeupdate', onTimeUpdate);
+  audio.addEventListener('loadedmetadata', onLoadedMetadata);
+  audio.addEventListener('seeked', () => { updateTimeDisplay(); updateLyric(); });
 
-    // Re-trigger gulaab rose draw
+  /* ---- Replay ---- */
+  replayBtn.addEventListener('click', () => {
+    audio.currentTime = 0;
+    if (audio.paused){
+      audio.play().then(() => { isPlaying = true; playBtn.textContent = 'Pause'; }).catch(() => {});
+    }
+    updateLyric();
+  });
+
+  /* ---- Seek / Vol ---- */
+  seekInput.addEventListener('input', () => {
+    if (audio.duration) audio.currentTime = (seekInput.value / 1000) * audio.duration;
+  });
+  volInput.addEventListener('input', () => { audio.volume = parseFloat(volInput.value); });
+  audio.volume = parseFloat(volInput.value);
+
+  /* ---- Lyrics JSON loader ---- */
+  function loadLyricsFromData(data){
+    let arr = null;
+    if (Array.isArray(data)) arr = data;
+    else if (data && Array.isArray(data.lyrics)) arr = data.lyrics;
+    if (!arr){ console.warn('Unrecognized lyrics format'); return; }
+    lyrics = arr
+      .filter(item => item && typeof item.time === 'number' && typeof item.text === 'string')
+      .map(item => ({ time: item.time, text: item.text.trim() }))
+      .sort((a, b) => a.time - b.time);
+    currentLyricIndex = -1;
+    hintEl.hidden = true;
+    updateLyric();
+  }
+
+  /* ---- Auto-load lyrics.json from same folder ---- */
+  // Use fetch first; fall back to XHR for file:// protocol
+  fetch('lyrics.json')
+    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+    .then(data => loadLyricsFromData(data))
+    .catch(() => {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'lyrics.json', true);
+        xhr.onload = function(){
+          if (xhr.status === 200 || xhr.status === 0){
+            try { loadLyricsFromData(JSON.parse(xhr.responseText)); } catch(e){}
+          } else if (location.protocol === 'file:'){
+            hintEl.hidden = false;
+            hintEl.innerHTML = 'Pick <b>lyrics.json</b> to load your lyrics.';
+          }
+        };
+        xhr.onerror = function(){
+          if (location.protocol === 'file:'){
+            hintEl.hidden = false;
+            hintEl.innerHTML = 'Pick <b>lyrics.json</b> to load your lyrics.';
+          }
+        };
+        xhr.send();
+      } catch(e){}
+    });
+
+  /* ---- Fullscreen ---- */
+  fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) stage.requestFullscreen().catch(() => {});
+    else document.exitFullscreen();
+  });
+
+  /* ================= START GULAAB ================= */
+  function startGulaab(){
+    if (gulaabStarted) return;
+    gulaabStarted = true;
+
+    // Resize & start canvas
+    resizeCanvas();
+    if (!rafId) rafId = requestAnimationFrame(canvasLoop);
+
+    // Trigger rose drawing
     roseDrawStart = 0;
     rosePaths.forEach(p => { p.style.strokeDashoffset = '1'; p.classList.remove('drawn'); });
     requestAnimationFrame(animateRose);
-
-    // Resize canvas and start gulaab loop
-    setTimeout(() => {
-      resizeCanvas();
-      if (!rafId) rafId = requestAnimationFrame(canvasLoop);
-    }, 100);
-
-    // Start petals ambient if not started
-    if (!petalRaf) startPetals();
 
     // Start audio (user gesture)
     if (audio.paused){
@@ -733,186 +572,12 @@ const FALLBACK_LYRICS = [
       audio.play().then(() => {
         isPlaying = true;
         playBtn.textContent = 'Pause';
-        soundBtn.classList.add('active');
       }).catch(() => {});
     }
 
-    // Initialize lyric
-    if (lyrics.length) syncLyricToAudio();
-  });
-
-  /* ============================================================
-     GULAAB AUDIO CONTROLS
-     ============================================================ */
-  function togglePlay(){
-    if (audio.paused){
-      audio.play().then(() => {
-        isPlaying = true;
-        playBtn.textContent = 'Pause';
-        soundBtn.classList.add('active');
-      }).catch(() => {});
-    } else {
-      audio.pause();
-      isPlaying = false;
-      playBtn.textContent = 'Play';
-      soundBtn.classList.remove('active');
-    }
+    // Initial lyric
+    if (lyrics.length) updateLyric();
   }
-
-  playBtn.addEventListener('click', togglePlay);
-  replayBtn.addEventListener('click', () => {
-    audio.currentTime = 0;
-    currentLyricIndex = -1;
-    syncLyricToAudio();
-    if (audio.paused){
-      audio.play().then(() => {
-        isPlaying = true;
-        playBtn.textContent = 'Pause';
-      }).catch(() => {});
-    }
-    updateTimeDisplay();
-  });
-  replayBtn2.addEventListener('click', () => replayBtn.click());
-  soundBtn.addEventListener('click', togglePlay);
-
-  audio.addEventListener('play', () => {
-    isPlaying = true;
-    playBtn.textContent = 'Pause';
-    soundBtn.classList.add('active');
-  });
-  audio.addEventListener('pause', () => {
-    isPlaying = false;
-    playBtn.textContent = 'Play';
-    soundBtn.classList.remove('active');
-  });
-  audio.addEventListener('ended', () => {
-    isPlaying = false;
-    playBtn.textContent = 'Play';
-    soundBtn.classList.remove('active');
-  });
-  audio.addEventListener('timeupdate', () => {
-    updateTimeDisplay();
-    syncLyricToAudio();
-  });
-  audio.addEventListener('loadedmetadata', updateTimeDisplay);
-  audio.addEventListener('seeked', () => {
-    updateTimeDisplay();
-    currentLyricIndex = -1;
-    syncLyricToAudio();
-  });
-
-  /* Next moment */
-  nextBtn.addEventListener('click', () => {
-    if (!lyrics.length) return;
-    let next = currentLyricIndex + 1;
-    if (next >= lyrics.length) next = 0;
-    const target = lyrics[next].time;
-    if (audio.duration) audio.currentTime = Math.min(target, audio.duration - 0.1);
-    currentLyricIndex = -1;
-    syncLyricToAudio();
-    if (audio.paused){
-      audio.play().then(() => {
-        isPlaying = true;
-        playBtn.textContent = 'Pause';
-      }).catch(() => {});
-    }
-  });
-
-  /* Seek / vol / speed */
-  seekInput.addEventListener('input', () => {
-    if (audio.duration) audio.currentTime = (seekInput.value / 1000) * audio.duration;
-  });
-  volInput.addEventListener('input', () => {
-    audio.volume = parseFloat(volInput.value);
-  });
-  audio.volume = parseFloat(volInput.value);
-  spdInput.addEventListener('input', () => {
-    audio.playbackRate = parseFloat(spdInput.value);
-  });
-  audio.playbackRate = parseFloat(spdInput.value);
-
-  /* Fullscreen */
-  fsBtn.addEventListener('click', () => {
-    const el = document.getElementById('gulaabStage');
-    if (!document.fullscreenElement) el.requestFullscreen().catch(() => {});
-    else document.exitFullscreen();
-  });
-
-  /* ============================================================
-     PERSONALIZE DIALOG
-     ============================================================ */
-  editBtn.addEventListener('click', () => {
-    nameInput.value = localStorage.getItem('ff_name') || '';
-    messageInput.value = localStorage.getItem('ff_message') || 'You make ordinary moments feel like magic.';
-    signInput.value = localStorage.getItem('ff_sign') || '— with all my heart';
-    editDialog.showModal();
-  });
-
-  editForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    const msg = messageInput.value.trim();
-    const sign = signInput.value.trim();
-    if (name) localStorage.setItem('ff_name', name);
-    if (msg) localStorage.setItem('ff_message', msg);
-    if (sign) localStorage.setItem('ff_sign', sign);
-    userMessage = msg || null;
-    userSignature = sign || null;
-    if (userSignature) lyricSub.textContent = userSignature;
-
-    const file = audioInput.files[0];
-    if (file){
-      const url = URL.createObjectURL(file);
-      audio.src = url;
-      audio.load();
-      if (showVisible){
-        audio.currentTime = 0;
-        currentLyricIndex = -1;
-        syncLyricToAudio();
-        audio.play().then(() => {
-          isPlaying = true;
-          playBtn.textContent = 'Pause';
-        }).catch(() => {});
-      }
-    }
-    editDialog.close();
-  });
-
-  document.querySelector('#editDialog .close').addEventListener('click', () => editDialog.close());
-
-  /* Load saved personalization */
-  (function loadSaved(){
-    const savedSign = localStorage.getItem('ff_sign');
-    if (savedSign){
-      userSignature = savedSign;
-      lyricSub.textContent = savedSign;
-    }
-  })();
-
-  /* ============================================================
-     KEYBOARD SHORTCUTS
-     ============================================================ */
-  document.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea')) return;
-    if (e.code === 'Space' && showVisible){
-      e.preventDefault();
-      togglePlay();
-    }
-    if (e.code === 'ArrowRight' && showVisible) nextBtn.click();
-    if (e.code === 'ArrowLeft' && showVisible) replayBtn2.click();
-  });
-
-  /* Start petals ambient on page load */
-  startPetals();
-
-  /* Pre-start gulaab canvas when show becomes visible */
-  const observer = new MutationObserver(() => {
-    if (show.classList.contains('visible') && !rafId){
-      resizeCanvas();
-      rafId = requestAnimationFrame(canvasLoop);
-    }
-  });
-  observer.observe(show, { attributes: true, attributeFilter: ['class'] });
 
 })();
 </script>
